@@ -6,21 +6,31 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <link rel="stylesheet" href="/static/cisco.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
-    <script src = "https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
-    <script src ="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src ="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src = "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src = "https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
-    <script src ="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
-    <script src = "https://cdn.datatables.net/plug-ins/1.10.19/api/sum().js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>                       
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-   </head>
+    <script>
+    let skills = {
+          Data: ['BGP','EIGRP','STP','WIFI'],
+          Voice: ['GATEWAYS','JABBER','VoIP','R & S'],
+          Video: ['WEBEX','JABBER','CMS','R & S'],
+          Security: ['AAA','ENCRYPTION','ML','TACACS'],
+          DataCenter: ['VXLAN','NEXUS','VIRTUALIZATION','UCS']
+          
+        };
+
+      $(document).on('change','#vertical',function() {
+       
+        $('#skills').empty().append(skills[$(this).val()].map((skill) => {
+          return $('<div class="checkbox"><label>' + 
+          '<input type="checkbox" name="skills" value="' + skill + '"/>' + skill +
+          '</label>');
+        }));
+      });
+
+      $( document ).ready(function() {
+        $("#vertical").trigger('change')
+      });
+    </script>  
+</head>
   
 <body>
         
@@ -68,38 +78,18 @@
                                     </label>
                                 </div>
                                 <h4>Business Vertical</h4>
-                                <select class="form-control" name="vertical">
-                                    <option>Data</option>
-                                    <option>Voice</option>
-                                    <option>Video</option>
-                                    <option>Data Center</option>
-                                    <option>Security</option>
+                                <select class="form-control" name="vertical" id="vertical">
+                                    <option value="Data">Data</option>
+                                    <option value="Voice"> Voice</option>
+                                    <option value="Video">Video</option>
+                                    <option value="DataCenter">DataCenter</option>
+                                    <option value="Security">Security</option>
                                 </select>
                                 <h4>Skills</h4>
-                                <div class="form-check">
-                                    <input class="form-check-input" name="skills" type="checkbox" value="BGP" id="bgp">
-                                    <label class="form-check-label" for="bgp">
-                                      BGP
-                                    </label>
+                                <div id="skills">
+
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" name="skills" type="checkbox" value="EIGRP" id="eigrp">
-                                    <label class="form-check-label" for="eigrp">
-                                      EIGRP
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" name="skills" type="checkbox" value="WIFI" id="wifi">
-                                    <label class="form-check-label" for="wifi">
-                                      WIFI
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" name="skills" type="checkbox" value="STP" id="stp">
-                                    <label class="form-check-label" for="stp">
-                                      STP
-                                    </label>
-                                </div>
+                               
                                 
                                 <button type="submit" class="btn btn-primary">Submit</button>
                               </form>
@@ -113,13 +103,4 @@
 </body>
 </html>
 <script>
-    $(document).ready(function () {
-  var dataTablevar = $('#dtBasicExample').DataTable({
-    "paging": false,
-    dom: 'Bfrtip',
-        buttons: [
-            'excel', 'pdf'
-        ]
-  });
-    });
 </script>
