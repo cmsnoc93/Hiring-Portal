@@ -20,7 +20,7 @@
       $(document).on('change','#vertical',function() {
        
         $('#skills').empty().append(skills[$(this).val()].map((skill) => {
-          return $('<div class="checkbox"><label>' + 
+          return $('<div class="checkbox" style="display:inline;margin-right:50px;"><label>' + 
           '<input type="checkbox" name="skills" value="' + skill + '"/>' + skill +
           '</label>');
         }));
@@ -55,29 +55,32 @@
                     <div class="panel-body">
                             <form action="/add_opening" method="POST"> 
                                 <div class="form-group">
-                                    <label for="count"><b>Count</b></label>
+                                    <strong><h4 class="cisco">Number of Positions Available</h4></strong>
                                     <input type="username" class="form-control" placeholder="Count" name="count" required>
                                 </div>
-                                <h4>Level</h4>
-                                <div class="form-check">
+                                <strong><h4 class="cisco">Expertise Level</h4></strong>
+                                <div class="col-md-12" style="margin:5px">
+                                
+                                <div class="form-check col-md-4">
                                     <input class="form-check-input" type="radio" name="expertise" id="begRadio" value="beg" checked>
                                     <label class="form-check-label" for="begRadio">
                                       Beginner
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check col-md-4">
                                     <input class="form-check-input" type="radio" name="expertise" id="intRadio" value="int">
                                     <label class="form-check-label" for="intRadio">
                                       Intermediate
                                     </label>
                                 </div>
-                                <div class="form-check disabled">
+                                <div class="form-check col-md-4">
                                     <input class="form-check-input" type="radio" name="expertise" id="advRadio" value="adv">
                                     <label class="form-check-label" for="advRadio">
                                       Advanced
                                     </label>
                                 </div>
-                                <h4>Business Vertical</h4>
+                                </div>
+                                <strong><h4 class="cisco">Business Vertical</h4></strong>
                                 <select class="form-control" name="vertical" id="vertical">
                                     <option value="Data">Data</option>
                                     <option value="Voice"> Voice</option>
@@ -85,13 +88,13 @@
                                     <option value="DataCenter">DataCenter</option>
                                     <option value="Security">Security</option>
                                 </select>
-                                <h4>Skills</h4>
+                                <strong><h4 class="cisco">Skills Required</h4></strong>
                                 <div id="skills">
 
                                 </div>
                                
                                 
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="submit" class="btn btn-primary" style="margin-top:10px">Submit</button>
                               </form>
                         </div>
                   </div>
