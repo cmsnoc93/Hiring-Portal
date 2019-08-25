@@ -13,34 +13,17 @@ userDb = db.Users
 app = Flask(__name__)
 app.secret_key = 'some_secret'
 
-
-
 @app.route('/view_openings/<manager>/<level>',methods=['GET','POST'])
 def view_openings(manager,level):
-
-    openings = openingsDb.find({'manager':manager})
-
-    for i in openings:
-        print(i)
-    openings.rewind()
-    
+    openings = openingsDb.find({'manager':manager})    
     if request.method == 'GET':
         return render_template('view_openings.html',openings=openings,chosen=level)
-    
-    
-@app.route('/add_obj',methods=['GET','POST'])
-def add_obj():
-    openingsDb.insert({"manager":"Vaibhav","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
-    openingsDb.insert({"manager":"Rashmikanth","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
-    
-    return "Done"
+     
 
 @app.route('/add_opening',methods=['GET','POST'])
 def add_opening():
-
     if request.method == 'GET':
-        return render_template('add_opening.html')
-    
+        return render_template('add_opening.html')    
     if request.method == 'POST':          
         vertical = request.form['vertical']
         count = request.form['count']
@@ -103,3 +86,10 @@ def logout():
     flash(u'You were successfully logged  out!', 'log_msg')
     return redirect(url_for('login'))
 
+
+@app.route('/add_obj',methods=['GET','POST'])
+def add_obj():
+    openingsDb.insert({"manager":"Vaibhav","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
+    openingsDb.insert({"manager":"Rashmikanth","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
+    
+    return "Done"

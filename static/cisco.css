@@ -3,7 +3,9 @@
     src: url("/static/fonts/CiscoSans/CiscoSansTTLight.ttf"); 
 }
 
-
+.navbar-brand{
+  color:#009EDC;
+}
 .cisco{
   font-family: 'cisco-sans';
   color:#009EDC;

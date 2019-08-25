@@ -23,9 +23,11 @@
                                 <div style="float:right; margin:10px; margin-top:20px">
                                 <button class="btn btn-outline-success btn-primary" onclick="location.href='/logout'">Logout</button></form>
                                 </div>
+                                {% if session['role'] == 'Admin' %}
                                 <div style="float:right; margin:10px; margin-top:20px">                      
-                                <button class="btn btn-outline-success btn-primary" onclick="location.href='/add_opening'">Add</button></form>
+                                <button class="btn btn-outline-success btn-success" onclick="location.href='/add_opening'">Add</button></form>
                                 </div>
+                                {% endif %}
 
                         </nav>
                 <div class="panel panel-default">
@@ -44,17 +46,27 @@
                         {% for job in level.jobs %}
                         <div class="card">
                         <div class="card-header">
-                        <h3 class="cisco">{{ job.position }} - {{ job.tower }}</h3> 
+                        <h3 class="cisco">{{ job.position }} - {{ job.tower }}</h3>
                         </div>
                         <div class="card-body">
                             <div class="row">
                             <div class="col-md-10">
-                            <h5 class="card-title">Openings: {{ job.count }} </h5>
-                            <p class="card-text">Reqiurements: {{ job.requirements }}</p>
+                            <p class="card-title"><strong>Openings:</strong> {{ job.count }} </p>                            
+                            <p class="card-text"><strong>Skills Required: </strong>
+                                <ul class="list-inline">                                                                     
+                                {% for skill in job.requirements %}
+                                <li>{{skill}}</li>
+                                {% endfor %}
+                                </ul>
+                            </p>
                             </div>
                             <div class="col-md-2">
+                            {% if session['role'] == 'Admin' %}
                             <a href="#" class="btn btn-warning" style="margin-right:4px">Edit</a>
                             <a href="#" class="btn btn-danger">Delete</a>
+                            {% elif session['role'] == 'User'%}
+                            <a href="#" class="btn btn-success" style="float:right;margin-right:10px">Apply</a>
+                            {% endif %}
                             </div>  
                             </div>
                         </div>
