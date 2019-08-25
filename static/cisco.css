@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'cisco-sans'; /*a name to be used later*/
+    src: url("/static/fonts/CiscoSans/CiscoSansTTLight.ttf"); /*URL to font*/
+}
+
+
+.cisco{
+  font-family: 'cisco-sans';
+  color:#009EDC;
+}
