@@ -1,6 +1,6 @@
 @font-face {
-    font-family: 'cisco-sans'; /*a name to be used later*/
-    src: url("/static/fonts/CiscoSans/CiscoSansTTLight.ttf"); /*URL to font*/
+    font-family: 'cisco-sans';
+    src: url("/static/fonts/CiscoSans/CiscoSansTTLight.ttf"); 
 }
 
 
