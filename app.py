@@ -5,6 +5,8 @@ import json
 import urllib
 import datetime
 import threading,jinja2
+import os
+import binascii
 
 mongo = MongoClient('mongodb+srv://cmsnoc93:'+ urllib.parse.quote('cmsnoc@123') + '@cluster0-qxw77.mongodb.net/test?retryWrites=true&w=majority')
 db = mongo.CMS_Hiring
@@ -34,8 +36,9 @@ def add_opening():
         count = request.form['count']
         expertise = request.form['expertise']
         skills = request.form.getlist('skills')
-
-        job = {"position":"NOC Engineer","requirements":skills,"expertise":expertise,"count":count,"tower":vertical}
+        id = binascii.hexlify(os.urandom(16))
+        print(id)
+        job = {"position":"NOC Engineer","requirements":skills,"expertise":expertise,"count":count,"tower":vertical,'id':id}
         print(job)
         openingsDb.update( {"manager":session['username'],"levels.id":expertise},{"$inc": { "levels.$.count": int(count) },"$push":{"levels.$.jobs":job}})
         return redirect(url_for('landing'))
