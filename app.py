@@ -40,7 +40,7 @@ def add_opening():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
-    if session['logged_in']:
+    if session and session['logged_in']:
         return redirect(url_for('landing'))
 
     m = dict()
@@ -55,16 +55,17 @@ def login():
         if (request.form['username'] in m.keys()):
                 if (m[request.form['username']] == request.form['password']):
                     session['logged_in'] = True
-                    session['role'] = request.form['role']
+                    session['role'] = 'Admin'
                     session['username'] = request.form['username']                    
                     return redirect(url_for('landing'))
                 else:                    
                     flash("Invalid Password", 'log_msg')
                     return redirect(url_for('login'))
         else:
-            error = "Invalid Credentials"
-            flash(error, 'log_msg')
-            redirect(url_for('login'))
+            session['logged_in'] = True
+            session['role'] = 'User'
+            session['username'] = request.form['username'] 
+            redirect(url_for('landing'))
             
         
     return redirect(url_for('login')) 
