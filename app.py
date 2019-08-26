@@ -17,7 +17,12 @@ app.secret_key = 'some_secret'
 def view_openings(manager,level):
     openings = openingsDb.find({'manager':manager})    
     if request.method == 'GET':
-        return render_template('view_openings.html',openings=openings,chosen=level)
+        m = dict()
+        m['beg'] = 'Beginner'
+        m['int'] =  'Intermediate'
+        m['adv'] = 'Advanced'
+        level_applied = m[level]
+        return render_template('view_openings.html',openings=openings,chosen=level,lvl = level_applied)
      
 
 @app.route('/add_opening',methods=['GET','POST'])
