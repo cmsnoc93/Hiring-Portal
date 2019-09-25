@@ -13,27 +13,6 @@
   
 
     <script>
-    let skills = {
-          Data: ['BGP','EIGRP','STP','WIFI'],
-          Voice: ['GATEWAYS','JABBER','VoIP','R & S'],
-          Video: ['WEBEX','JABBER','CMS','R & S'],
-          Security: ['AAA','ENCRYPTION','ML','TACACS'],
-          DataCenter: ['VXLAN','NEXUS','VIRTUALIZATION','UCS']
-          
-        };
-
-      $(document).on('change','#vertical',function() {
-       
-        $('#skills').empty().append(skills[$(this).val()].map((skill) => {
-          return $('<div class="checkbox" style="display:inline;margin-right:50px;"><label>' + 
-          '<input type="checkbox" name="skills" value="' + skill + '"/>' + skill +
-          '</label>');
-        }));
-      });
-
-      $( document ).ready(function() {
-        $("#vertical").trigger('change')
-      });
     </script>  
 </head>
   
@@ -50,68 +29,57 @@
                                     <div style="float:right; margin:10px; margin-top:20px">
                                     <button class="btn btn-outline-success btn-primary" onclick="location.href='/logout'">Logout</button></form>
                                     </div>
-                                    
+
 
     
                             </nav>
                     <div class="panel panel-default">
                             <div class="panel-heading">
-                                    <h3 class="text-center cisco"><strong>Add New Opening</strong></h3>
+                                    <h3 class="text-center cisco"><strong>Add New Candidate</strong></h3>
                                 </div>
                     <div class="panel-body">
-                            <form action="/add_opening" method="POST"> 
-                                <div class="form-group">
-                                    <strong><h4 class="cisco">Number of Positions Available</h4></strong>
-                                    <input type="username" class="form-control" placeholder="Count" name="count" required>
-                                </div>
-                                <strong><h4 class="cisco">Expertise Level</h4></strong>
-                                <div class="col-md-12" style="margin:5px">
-                                
-                                <div class="form-check col-md-4">
-                                    <input class="form-check-input" type="radio" name="expertise" id="begRadio" value="beg" checked>
-                                    <label class="form-check-label" for="begRadio">
-                                      Beginner
-                                    </label>
-                                </div>
-                                <div class="form-check col-md-4">
-                                    <input class="form-check-input" type="radio" name="expertise" id="intRadio" value="int">
-                                    <label class="form-check-label" for="intRadio">
-                                      Intermediate
-                                    </label>
-                                </div>
-                                <div class="form-check col-md-4">
-                                    <input class="form-check-input" type="radio" name="expertise" id="advRadio" value="adv">
-                                    <label class="form-check-label" for="advRadio">
-                                      Advanced
-                                    </label>
-                                </div>
-                                </div>
-                                <strong><h4 class="cisco">Business Vertical</h4></strong>
-                                <select class="form-control" name="vertical" id="vertical">
-                                    <option value="Data">Data</option>
-                                    <option value="Voice"> Voice</option>
-                                    <option value="Video">Video</option>
-                                    <option value="DataCenter">DataCenter</option>
-                                    <option value="Security">Security</option>
-                                </select>
-                                <strong><h4 class="cisco">Skills Required</h4></strong>
-                                <div id="skills">
-
-                                </div>
-
-                                    <h4 class="cisco">Opening Added on:</h4>
-                                            <div class='input-group date' id='datetimepicker1'>
-                                                <input type='text' class="form-control" name="date"  />
-                                                <span class="input-group-addon">
-                                                    <span class="glyphicon glyphicon-calendar"></span>
-                                                </span>
-                                            </div>
-                              <strong><h4 class="cisco">Technical Resource Suggested</h4></strong>
-                              <div >
-                                <input type="text" id="separate" class= "form-control" name="interviewer" value="" />  
+                            <form action="/save_detail/{{id}}" method="POST"> 
+                              <div class="imgcontainer" style="height:10px">
+                                <!-- <img src="data:image/png;base64,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"> -->
+                                {% with messages = get_flashed_messages() %}
+                                {% if messages %}     
+                                  {% for message in messages %}
+                                    <h6 class="cisco">{{ message }}</h6>         
+                                  {% endfor %}
+                                {% endif %}
+                                {% endwith %}    
                               </div>
-                             <div id = "results" >
-                             </div>
+                                <div class="form-group">
+                                    <strong><h4 class="cisco">Name of Candidate</h4></strong>
+                                    <input type="text" class="form-control" placeholder="Name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <strong><h4 class="cisco">LinkedIn Profile</h4></strong>
+                                    <input type="url" class="form-control" placeholder="URL" name="linked_in" required>
+                                </div>
+                                <div class="form-group">
+                                  <strong><h4 class="cisco">Experience(Years)</h4></strong>
+                                  <input type="number" class="form-control" placeholder="experience" name="experience" required>
+                              </div>
+
+                              <div class="form-group">
+                                <strong><h4 class="cisco">Educational Qualification</h4></strong>
+                                <input type="text" class="form-control" placeholder="qualification" name="qualification" required>
+                              </div>
+
+                                <div class="form-group">
+                                  <strong><h4 class="cisco">Skills Found:</h4></strong>
+                                  {% for x in req %}
+
+                                  <input type="checkbox" name="skill" value= "{{x}}" checked>{{x}}<br>
+
+                                  {%endfor%}
+                              </div>
+                              <div class="form-group">
+                                <strong><h4 class="cisco">Additional Skills:</h4></strong>
+                                <input type="text" class="form-control" placeholder="Additional skills" name="add_skills" required>
+                              </div>
+                           
                                 <button type="submit" class="btn btn-primary" style="margin-top:10px">Submit</button>
                               </form>
                         </div>
@@ -124,15 +92,9 @@
 </body>
 </html>
 <script>
-  $('#separate').on('keyup',function(){
-   var splitter = $('#separate').val().split(',');  
-   var htmlToAdd='';
-   for (i=0; i<splitter.length; i++)
-   {
-       htmlToAdd += '<input type = "checkbox" name = "Hirer" value = '+splitter[i]+' checked/> ' + splitter[i] + '<br>';
-   }
-   $('#results').html(htmlToAdd);
-});
+
+  
+
   $(function () {
                 $('#datetimepicker1').datetimepicker({
                     format: 'DD-MM-YYYY'

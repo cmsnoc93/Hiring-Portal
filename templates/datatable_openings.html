@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CMS Hiring</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="/static/cisco.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+    <script src = "https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
+    <script src ="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src ="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src = "https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
+    <script src ="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
+    <script src = "https://cdn.datatables.net/plug-ins/1.10.19/api/sum().js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>                       
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+   </head>
+  
+<body>
+
+        <div class="container">
+        <div class="row">
+                <div class="col-md-12" >
+                        <nav class="navbar navbar-light bg-light justify-content-between">
+                                <div class="col-md-6" style="margin-bottom:10px">
+                                <a href="/landing"><img style="height:83   px; width:100px;float: left;" src="data:image/png;base64,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"></a>
+                                <a class="navbar-brand" href="/landing"><h2 class="cisco">CMS Hiring</h2></a>
+                                </div>
+                                <div style="float:right; margin:10px; margin-top:20px">
+                                <button class="btn btn-outline-success btn-primary" onclick="location.href='/logout'">Logout</button></form>
+                                </div>
+                                {% if session['role'] == 'Admin' %}
+                                <div style="float:right; margin:10px; margin-top:20px">                      
+                                <button class="btn btn-outline-success btn-success" onclick="location.href='/add_opening'">Add</button></form>
+                                </div>
+                                {% endif %}
+
+                        </nav>
+                        <div class="form-group col-sm-2">
+                            <label for="tower">Tower:</label>
+                        <select class="form-control" id="tower">
+                            <option value=""></option>
+                             <option value="Security">Security</option>
+                             <option value="Data">Data</option>
+                             <option value="Voice">Voice</option>
+                             <option value="Video">Video</option>
+                             <option value="DataCenter">DataCenter</option>
+                           </select>
+                        </div>
+                      
+                <div class="panel panel-default">
+                     
+                <div class="panel-heading">
+                    
+                    <h3 class="text-center cisco"><strong>Openings by {{manager}} - {{lvl}}</strong></h3>
+              
+                </div>
+  
+ 
+                </div>
+               
+            
+
+                <table id = "dtBasicExample" class="table table-hover table-striped table-bordered table-sm" cellspacing="4" width="100%">
+                    <thead>
+                        <tr>
+                            <!-- <td> ID</td> -->
+                            <th class="text-center">Job ID</th>
+                            <th class="text-center">Skills</th>
+                            <th class="text-center">Tower</th>  
+                            <th class="text-center">Open Since</th>  
+                            {%if session['role'] == 'Admin'%}
+                            {% if session['username'] == manager %}
+                            <th class="text-center">Technical Resource</th>  
+                            <th class="text-center">View Details</th>  
+                            <th class="text-center">Delete</th>  
+                            {% endif %}
+                            {% endif %}
+                            {%if session['role'] == 'User'%}
+                            <th class="text-center">Add Details</th>  
+                            <th class="text-center">View Candidates</th>  
+                            {%endif%}
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                      {% for record in openings %}
+                            <tr>
+                                    <td class="highrow text-center">{{ record.job_id }}</td>
+                                    <td class="highrow text-center">{{ record.requirements }}</td>
+                                    <td class="highrow text-center">{{ record.tower  }}</td>
+                                    <td class="highrow text-center">{{ record.opening_date  }}</td>
+                                    {%if session['role'] == 'Admin'%}
+                                    {% if session['username'] == manager %}
+                                    <td class = "highrow text-center">
+                                        {%for x in record.technical_cec %} 
+                                        {{x}}<br>
+                                        {%endfor%}
+                                    </td>
+                                    <td class = "highrow text-center"> <a href="/view_jobs/{{record['_id']}}/{{record['job_id']}}" class="btn btn-warning" style="margin-right:4px">View Details</a></td>
+                                    <td class = "highrow text-center"><a href="/delete/{{record.manager}}/{{record.expertise}}/{{record['_id']}}" class="btn btn-danger">Delete</a></td>
+                                    {% endif %}
+                                    {% endif %}
+                                    {%if session['role'] == 'User'%}
+                                    <td class = "highrow text-center"><a href="/adddetail/{{record['_id']}}" class="btn btn-primary">Add Details</a></td>
+                                    <td class = "highrow text-center"><a href="/view_jobs/{{record['_id']}}/{{record['job_id']}}" class="btn btn-warning">View Candidates</a></td>
+                                    {%endif%}
+                                </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+                </div>
+            
+                       
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+  var dataTablevar = $('#dtBasicExample').DataTable({
+    "paging": false,
+    dom: 'Bfrtip',
+        buttons: [
+        { extend: 'excelHtml5',      exportOptions: {columns: [ 0, 1, 2,3 ]}, footer: true },
+        { extend: 'pdfHtml5',  exportOptions: {columns: [ 0, 1, 2,3]},footer: true }
+        ],
+        "footerCallback": function ( row, data, start, end, display ) {
+				var api = this.api();
+				nb_cols = api.columns().nodes().length-2;
+				var j = 7;
+				while(j < nb_cols){
+					var pageTotal = api
+                .column( j, { page: 'current'} )
+                .data()
+                .reduce( function (a, b) {
+                    return Number(a) + Number(b);
+                }, 0 );
+                console.log(pageTotal)
+          // Update footer
+          $( api.column( j ).footer() ).html(pageTotal);
+					j++;
+				} 
+			}
+  });
+  console.log( dataTablevar.columns(2))
+  $('#tower').on('change', function () {
+    dataTablevar.columns(2).search( this.value ).draw();
+    });
+  $('.dataTables_length').addClass('bs-select');
+
+});
+</script>
