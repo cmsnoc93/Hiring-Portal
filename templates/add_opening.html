@@ -22,17 +22,26 @@
           
         };
 
+
       $(document).on('change','#vertical',function() {
        
         $('#skills').empty().append(skills[$(this).val()].map((skill) => {
           return $('<div class="checkbox" style="display:inline;margin-right:50px;"><label>' + 
           '<input type="checkbox" name="skills" value="' + skill + '"/>' + skill +
-          '</label>');
+          '</label></div>');
         }));
       });
 
       $( document ).ready(function() {
         $("#vertical").trigger('change')
+        var htmlToAddvendor='';
+        vendors = ['Hcl','Synophic']
+        console.log(vendors)
+        for (i=0; i<vendors.length; i++)
+        {
+         htmlToAddvendor += '<div class="checkbox" style="display:inline;margin-right:50px;"><label>'+'<input type = "checkbox" name = "vendor" value = '+vendors[i]+' /> ' + vendors[i] + '</label></div>' +'<br>';
+        }
+         $('#vendors').html(htmlToAddvendor);
       });
     </script>  
 </head>
@@ -59,7 +68,7 @@
                                     <h3 class="text-center cisco"><strong>Add New Opening</strong></h3>
                                 </div>
                     <div class="panel-body">
-                            <form action="/add_opening" method="POST"> 
+                            <form action="/add_opening" method="POST" id='openings_id'> 
                                 <div class="form-group">
                                     <strong><h4 class="cisco">Number of Positions Available</h4></strong>
                                     <input type="username" class="form-control" placeholder="Count" name="count" required>
@@ -95,10 +104,14 @@
                                     <option value="Security">Security</option>
                                 </select>
                                 <strong><h4 class="cisco">Skills Required</h4></strong>
-                                <div id="skills">
+                                <div id="skills" required>
 
                                 </div>
-
+                                <strong><h4 class="cisco">Vendors Eligible</h4></strong>
+                                <div id="vendors" required>
+                                  
+                                </div>
+                                
                                     <h4 class="cisco">Opening Added on:</h4>
                                             <div class='input-group date' id='datetimepicker1'>
                                                 <input type='text' class="form-control" name="date"  />
@@ -108,11 +121,11 @@
                                             </div>
                               <strong><h4 class="cisco">Technical Resource Suggested</h4></strong>
                               <div >
-                                <input type="text" id="separate" class= "form-control" name="interviewer" value="" />  
+                                <input type="text" id="separate" class= "form-control" name="interviewer" value="" required/>  
                               </div>
                              <div id = "results" >
                              </div>
-                                <button type="submit" class="btn btn-primary" style="margin-top:10px">Submit</button>
+                                <button type="submit" class="btn btn-primary" style="margin-top:10px" id = "submit_btn_id">Submit</button>
                               </form>
                         </div>
                   </div>
@@ -124,6 +137,17 @@
 </body>
 </html>
 <script>
+  $(function()
+{
+  $('#submit_btn_id').on('click',function()
+  {
+    $(this).val('Please wait ...')
+      .attr('disabled','disabled');
+    $('#openings_id').submit();
+    $("#openings_id :input").prop("disabled", true);
+  });
+  
+});
   $('#separate').on('keyup',function(){
    var splitter = $('#separate').val().split(',');  
    var htmlToAdd='';

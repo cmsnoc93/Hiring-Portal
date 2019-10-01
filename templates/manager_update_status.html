@@ -64,11 +64,70 @@
                                    <input type= "text" name="job_id" value="{{job_id}}" hidden>
                                    <input type= "text" name="opening_id" value="{{opening_id}}" hidden>
                                 </div>
+                              
                                 <div class="form-group">
-                                    <strong><h4 class="cisco">Feedback</h4></strong>
-                                    <input type="text" class="form-control" placeholder="feedback" name="feedback" required>
-                                   
+                                    <strong><h4 class="cisco">P1</h4></strong>
+                                    <select class="form-control" name='P1' id = 'P1' onchange = 'f1()' required>
+                                        <option value=1>1</option>
+                                        <option value=2>2</option>
+                                        <option value=3>3</option>
+                                        <option value=4>4</option>
+                                        <option value=5>5</option>
+                                      </select>
                                 </div>
+
+                                <div class="form-group">
+                                    <strong><h4 class="cisco">P2</h4></strong>
+                                    <select class="form-control" name='P2' id = 'P2' onchange = 'f1()' required>
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                      </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <strong><h4 class="cisco">P3</h4></strong>
+                                    <select class="form-control" name='P3' id = 'P3' onchange = 'f1()' required>
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                      </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <strong><h4 class="cisco">P4</h4></strong>
+                                    <select class="form-control" name='P4' id = 'P4' onchange = 'f1()' required>
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                      </select>
+                                </div>
+                                <div class="form-group">
+                                        <strong><h4 class="cisco">Total</h4></strong>
+                                        <div id = "total" name='total'>
+
+                                        </div>
+                                </div>
+                                
+                                <div class="form-group" >
+                                        <strong><h4 class="cisco">Percentage</h4></strong>
+                                        <div id = "percent" name='percent'>
+
+                                        </div>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <strong><h4 class="cisco">Feedback</h4></strong>
+                                        <input type="text" class="form-control" placeholder="Feedback" name="feedback" required>
+                                       
+                                    </div>
+
                                 <button type="submit" class="btn btn-primary" style="margin-top:10px">Submit</button>
                               </form>
                         </div>
@@ -82,6 +141,30 @@
 </body>
 </html>
 <script>
+var p1=0,p2=0,p3=0,p4=0,p5=0; 
+var total = 0;
+var percent = 0;
+p1= Number($('#P1').val());
+p2 =Number($('#P2').val());
+p3 =Number( $('#P3').val());
+p4 = Number($('#P4').val());
+total  = p1+p2+p3+p4;
+console.log(total)
+percent = total * 5
+$('#total').html('<input class= "form-control" type = "text" name="total_val"  value ="'+total +'" disabled>');
+$('#percent').html('<input  class= "form-control" type = "text" name="percent_val"  value ="'+percent +'" disabled>');
+
+    function f1(){  
+        p1= Number($('#P1').val());
+        p2 =Number($('#P2').val());
+        p3 =Number( $('#P3').val());
+        p4 = Number($('#P4').val());
+        total  = p1+p2+p3+p4;
+        percent = total * 5
+        $('#total').html('<input class= "form-control" type = "text" name="total_val"  value ="'+total +'" disabled>');
+        $('#percent').html('<input  class= "form-control" type = "text" name="percent_val"  value ="'+percent +'" disabled>');
+
+    }
     $(function () {
        $(function()
    {

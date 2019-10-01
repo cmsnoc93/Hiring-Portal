@@ -68,9 +68,12 @@
                             <!-- <td> ID</td> -->
                             <th class="text-center">Name</th>  
                             <th class="text-center">Vendor</th>  
-                            {%if session['role'] == 'Admin'%}
+                            <th class="text-center">Vendor CEC</th>  
+                            {%if session['role'] == 'Admin' or session['role'] == 'User'%}
                             <th class="text-center">Technical Interview Status</th>  
-                            <th class="text-center">Managerial Interview Status</th>  
+                            <th class="text-center">Managerial Interview Status</th>
+                            {%endif%}
+                            {%if session['role'] == 'Admin' %}
                             <th class="text-center">Technical Interview Feedback</th>  
                             <th class="text-center">Managerial Interview Feedback</th>  
                             <th class="text-center">Update Managerial Status</th>  
@@ -83,8 +86,10 @@
                       {% for record in candidates %}
                             <tr>
                                     <td class="highrow text-center"><a href = "/candi_detail/{{record._id}}">{{ record.name }}</a></td>
+                                    <td class = "highrow text-center">{{record.company}}</td>
                                     <td class = "highrow text-center">{{record.vendor}}</td>
-                                    {%if session['role'] == 'Admin'%}
+                                    {%if session['role'] == 'Admin' or session['role'] == 'User'%}
+                                    <!-- TECHNICAL INTERVIEW STATUS -->
                                         {%if record.tech_done == 0 %}
                                         <td class = "highrow text-center">Technical interview not done</td>
                                         {% endif %}
@@ -94,6 +99,8 @@
                                         {%if record.tech_done == -1 %}
                                         <td bgcolor="#F42C08" class = "highrow text-center"><b>Technical interview Failed</b></td>
                                         {% endif %}
+                                    <!-- TECHNICAL INTERVIEW END -->
+                                    <!-- MANAGERIAL INTERVIEW STATUS -->
 
                                         {%if record.managerial_done == 0 and record.tech_done == -1 %}
                                         <td bgcolor="#F42C08" class = "highrow text-center"><b>Managerial interview not done</b></td>
@@ -111,6 +118,10 @@
                                         {%if record.managerial_done == -1 %}
                                         <td bgcolor="#F42C08" class = "highrow text-center"><b>Managerial interview Failed</b></td>
                                         {% endif %}
+                                    <!-- MANAGERIAL INTERVIEW END -->
+                                {%endif%}
+                                {%if session['role'] == 'Admin' %}
+                                    <!-- TECHNICAL FEEDBACK -->
                                         {%if record.tech_done == 0 %}
                                         <td class = "highrow text-center">No Feedback yet</td>
                                         {% endif %}
@@ -130,7 +141,8 @@
                                         {%if record.managerial_done == 0 and record.tech_done == 1 %}
                                         <td class = "highrow text-center">No Feedback yet</td>
                                         {% endif %}
-
+                                <!-- TECHNICAL FEEDBACK END -->
+                                <!-- MANAGERIAL FEEDBACK -->
                                         {%if record.managerial_done == 1 %}
                                         <td class = "highrow text-center"><b>{{record.manager_feedback}}</b></td>
                                         {% endif %}
@@ -141,11 +153,13 @@
                                         {%if record.tech_done == 0 %}
                                         <td class = "highrow text-center">NA</td>
                                         {% endif %}
-                
+                             <!-- MANAGERIAL FEEDBACK END -->
+                             <!--UPDATE MANAGER INTERVIEW -->
                                         {%if record.managerial_done == 0 and record.tech_done == 1  %}
                                         <td class = "highrow text-center"><a href="/manager_status/{{record._id}}/{{job_id}}/{{opening_id}}" class="btn btn-success" role="button">Update Manager Interview<br> Status</a></td>                          
                                         {% endif %}
-
+                            <!-- MANGER UPDATE END -->
+                            <!-- VERDICT START -->
                                         {%if record.managerial_done == -1  %}
                                         <td bgcolor="#F42C08" class = "highrow text-center"><b>Candidate Rejected</b></td>
                                         {% endif %}
@@ -155,6 +169,7 @@
                                         {%if record.tech_done == -1 %}
                                         <td bgcolor="#F42C08" class = "highrow text-center"><b>Candidate Rejected</b></td>
                                         {% endif %}
+                                <!--VERDICT END  -->
                                     {%endif%}
                                 </tr>
                             {% endfor %}

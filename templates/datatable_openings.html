@@ -77,6 +77,7 @@
                             <th class="text-center">Skills</th>
                             <th class="text-center">Tower</th>  
                             <th class="text-center">Open Since</th>  
+                            <th class="text-center">State</th> 
                             {%if session['role'] == 'Admin'%}
                             {% if session['username'] == manager %}
                             <th class="text-center">Technical Resource</th>  
@@ -98,6 +99,13 @@
                                     <td class="highrow text-center">{{ record.requirements }}</td>
                                     <td class="highrow text-center">{{ record.tower  }}</td>
                                     <td class="highrow text-center">{{ record.opening_date  }}</td>
+                                    <!-- STATE START -->
+                                    {%if record.closed == 0%}
+                                    <td class="highrow text-center">Open</td>
+                                    {%elif record.closed == 1%}
+                                    <td class="highrow text-center">Closed</td>
+                                    {%endif%}
+                                    <!-- STATE END -->
                                     {%if session['role'] == 'Admin'%}
                                     {% if session['username'] == manager %}
                                     <td class = "highrow text-center">
@@ -110,8 +118,20 @@
                                     {% endif %}
                                     {% endif %}
                                     {%if session['role'] == 'User'%}
-                                    <td class = "highrow text-center"><a href="/adddetail/{{record['_id']}}" class="btn btn-primary">Add Details</a></td>
+                                        {% for x in record['vendors'] %}
+                                           {%if x['vend'] == session['company'] %}
+                                             {% if x['slots'] == 0 %}
+                                                <td class = "highrow text-center"> Limit for this opening reached!</td>
+                                             {%else%}
+                                                <form action = "/adddetail/{{record['_id']}}" method = 'POST'>
+
+                                                <td class = "highrow text-center"><input type='submit' class="btn btn-primary" value = "Add Details"></td>
+                                                </form>
+                                             {%endif%}
+                                           {%endif%}
+                                        {%endfor%}                                                
                                     <td class = "highrow text-center"><a href="/view_jobs/{{record['_id']}}/{{record['job_id']}}" class="btn btn-warning">View Candidates</a></td>
+
                                     {%endif%}
                                 </tr>
                             {% endfor %}

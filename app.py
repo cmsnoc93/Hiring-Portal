@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect,url_for,Response,session,flash
+from flask import Flask,render_template,make_response,request,redirect,url_for,Response,session,flash,Response,send_file
 from flask_mail import Mail,Message
 from pymongo import MongoClient
 import json
@@ -11,6 +11,7 @@ from bson import ObjectId
 from ldap3 import Server,Connection,ALL
 from functools import wraps
 import datetime,random
+import gridfs
 # cmsnoc93:'+ urllib.parse.quote('cmsnoc@123') + '@cluster0-qxw77.mongodb.net/test?retryWrites=true&w=majority
 mongo = MongoClient('mongodb+srv://cmsnoc93:'+ urllib.parse.quote('cmsnoc@123') + '@cluster0-qxw77.mongodb.net/test?retryWrites=true&w=majority')
 db = mongo.CMS_Hiring
@@ -19,43 +20,70 @@ OpeningstempDb = db.Openings_temp
 userDb = db.Users
 JobsDb = db.Jobs
 CandiDb = db.Candidates
+Managers = db.Managers
+Vendors = db.Vendor
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
 mail = Mail(app)
 app.secret_key = 'some_secret'
 
-# @app.route('/view_openings/<manager>/<level>',methods=['GET','POST'])
-# def view_openings(manager,level):
-#     openings = JobsDb.find({'manager':manager,'expertise':level})
-#     if request.method == 'GET':
-#         m = dict()
-#         m['beg'] = 'Beginner'
-#         m['int'] =  'Intermediate'
-#         m['adv'] = 'Advanced'
-#         level_applied = m[level]
-#         return render_template('view_openings_temp.html',openings=openings,chosen=level,lvl = level_applied)
 def technical_role(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
-      if session:
+    def wrapper(*args, **kwargs):
+      if session['logged_in'] == True:
         if session['role'] == 'Technical':
             return f(*args,**kwargs )
-      else:
+        else:
             return redirect(url_for('landing'))
-    return decorated_function
+      else:
+            return redirect(url_for('login'))
+
+    return wrapper
+
+def Admin(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+      if session['logged_in'] == True:
+        if session['role'] == 'Admin':
+            return f(*args,**kwargs )
+        else:
+            return redirect(url_for('landing'))
+      else:
+            return redirect(url_for('login'))
+
+    return wrapper
+
+def Vendor(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+      if session['logged_in'] == True:
+        if session['role'] == 'User':
+            return f(*args,**kwargs )
+        else:
+            return redirect(url_for('landing'))
+      else:
+            return redirect(url_for('login'))
+
+    return wrapper
+
 
 @app.route('/email',methods=['GET'])
 def email():
     msg = Message(subject='Test mail!',
-                  body='This is a Flask generated Mail',
+                  body='This is a Flask Generated mail',
                   sender="araviana@cisco.com",
-                  recipients="neemenon@cisco.com")
+                  recipients=["neemenon@cisco.com"])
     mail.send(msg)
     return "Mail DONE"
 
 @app.route('/view_openings/<manager>/<level>',methods=['GET','POST'])
 def view_openings(manager,level):
-    openings = JobsDb.find({'manager':manager,'expertise':level})
+    if session['role'] == 'User':
+        openings = JobsDb.find({'eligible_vends':{"$in":[session['company']]},'manager':manager,'expertise':level})
+    elif session['role'] == 'Admin':
+        openings = JobsDb.find({'manager':manager,'expertise':level})
+    else:
+        openings = JobsDb.find({'manager':manager,'expertise':level})
     if request.method == 'GET':
         m = dict()
         m['beg'] = 'Beginner'
@@ -75,37 +103,67 @@ def add_opening():
         return render_template('add_opening.html')    
     if request.method == 'POST':          
         jobs_arr = []
-        id_arr = []
+        vend_arr = []
+        allowed_per_vend_dict = dict()
         vertical = request.form['vertical']
         count = request.form['count']
         expertise = request.form['expertise']
         skills = request.form.getlist('skills')
         date = request.form['date']
         technical_res = request.form.getlist('Hirer')
-        for var in range(0,int(count)):   
-            id = binascii.hexlify(os.urandom(16))
-            id_arr.append(id)
-            job = {"job_id":random.sample(range(10000, 99999) ,1)[0],"position":"NOC Engineer","requirements":skills,"expertise":expertise,"tower":vertical,'technical_cec':technical_res,'id':id,"manager":session['username'],"opening_date":date,'candidates':[]}
-            jobs_arr.append(job)
+        Vendor = request.form.getlist('vendor')
+        print(allowed_per_vend_dict)
+        for x in Vendor:
+            print(x)
+            # allowed_per_vend_dict['vend'] = x
+            # allowed_per_vend_dict['slots'] = 5 * int(count)
+            vend_arr.append({'vend':x,'slots':5 * int(count)})
+        print(allowed_per_vend_dict)
+        job = {"job_id": random.sample(range(10000, 99999), 1)[0],'eligible_vends':Vendor ,"position": "NOC Engineer", "requirements": skills,
+               "expertise": expertise, "tower": vertical, 'technical_cec': technical_res,'vendors':vend_arr,
+               "manager": session['username'], "opening_date": date,'select_count':count, 'closed':0,'applicant_count':len(Vendor) * 5 * int(count), 'Applicants':[]}
+        jobs_arr.append(job)
         job_id = JobsDb.insert(jobs_arr)
-        print(id_arr)
-        for x in id_arr:
-            a = JobsDb.find({'id':x})
-            for p in a:
-                print("HAHAHAHA")
-                OpeningstempDb.update( {"manager":session['username'],"levels.id":expertise},{"$push":{"levels.$.jobs":p['_id']}})
-        OpeningstempDb.update( {"manager":session['username'],"levels.id":expertise},{"$inc": { "levels.$.count": int(count) }})
-        print("JOBS")
-        print(jobs_arr)
-        # for var in range(0,int(count)):   
-        #     job_id = JobsDb.insert(job)
-        #     print("inserted")
-        #     print(job_id)
-        #     print("\n\n\n\n")
-        #     OpeningstempDb.update( {"manager":session['username'],"levels.id":expertise},{"$push":{"levels.$.jobs":job_id}}) 
-        # print(job)
-        # openingsDb.update( {"manager":session['username'],"levels.id":expertise},{"$inc": { "levels.$.count": int(count) },"$push":{"levels.$.jobs":job}})
+        Managers.update({'manager':session['username'],"levels.tower":expertise + "_" + vertical },{"$push":{"levels.$.jobs":job_id}})
         return redirect(url_for('landing'))
+        # for var in range(0,int(count)):
+        #     id = binascii.hexlify(os.urandom(16))
+        #     id_arr.append(id)
+        #     job = {"job_id":random.sample(range(10000, 99999) ,1)[0],"position":"NOC Engineer","requirements":skills,"expertise":expertise,"tower":vertical,'technical_cec':technical_res,'id':id,"manager":session['username'],"opening_date":date,'candidates':[]}
+        #     jobs_arr.append(job)
+        # job_id = JobsDb.insert(jobs_arr)
+        # print(id_arr)
+        # for x in id_arr:
+        #     a = JobsDb.find({'id':x})
+        #     for p in a:
+        #         print("HAHAHAHA")
+        #         OpeningstempDb.update( {"manager":session['username'],"levels.id":expertise},{"$push":{"levels.$.jobs":p['_id']}})
+        # OpeningstempDb.update( {"manager":session['username'],"levels.id":expertise},{"$inc": { "levels.$.count": int(count) }})
+        # print("JOBS")
+        # print(jobs_arr)
+        # # for var in range(0,int(count)):
+        # #     job_id = JobsDb.insert(job)
+        # #     print("inserted")
+        # #     print(job_id)
+        # #     print("\n\n\n\n")
+        # #     OpeningstempDb.update( {"manager":session['username'],"levels.id":expertise},{"$push":{"levels.$.jobs":job_id}})
+        # # print(job)
+        # # openingsDb.update( {"manager":session['username'],"levels.id":expertise},{"$inc": { "levels.$.count": int(count) },"$push":{"levels.$.jobs":job}})
+        # return redirect(url_for('landing'))
+
+@app.route('/upload',methods=['GET'])
+def upload():
+    print(os.path.getsize(r'Nginx.png'))
+    db1 = mongo.File_DB
+    fs = gridfs.GridFS(db1)
+    fileID = fs.put(open(r'Nginx.png', 'rb'))
+    out = fs.get(fileID)
+    print(fileID)
+    print(out.length)
+    f = fs.get(ObjectId(fileID))
+    response = make_response(f.read())
+    response.mimetype = 'image/jpeg'
+    return response
 
 @app.route('/login1',methods = ['GET','POST'])
 def login1():
@@ -113,8 +171,11 @@ def login1():
     #     return redirect(url_for('landing'))
     m = dict()
     p = dict()
+    vend = dict()
     users = userDb.find()
-
+    vendors = Vendors.find()
+    for v in vendors:
+        vend[v['cec']] = v['company']
     for u in users:
         m[u['username']] = u['password']
         p[u['username']] = u['role']
@@ -127,6 +188,7 @@ def login1():
                     session['logged_in'] = True
                     session['role'] = p[request.form['cec']]
                     session['username'] = request.form['cec']
+
                     return redirect(url_for('landing'))
                 else:
                     flash("Invalid Password", 'log_msg')
@@ -135,6 +197,7 @@ def login1():
             session['logged_in'] = True
             session['role'] = p[request.form['cec']]
             session['username'] = request.form['cec']
+            session['company'] = vend[request.form['cec']]
             return redirect(url_for('landing'))
 
 
@@ -147,7 +210,12 @@ def login():
     #  return redirect(url_for('landing'))
     m = dict()
     p = dict()
+    vend = dict()
     users = userDb.find()
+    vendors = Vendors.find()
+
+    for v in vendors:
+        vend[v['cec']] = v['company']
 
     for u in users:
         m[u['cec']] = u['cec']
@@ -175,25 +243,42 @@ def login():
 
         session['logged_in'] = True
         session['username'] = request.form['cec']
-
+        print(vend)
         if (request.form['cec'] in m.keys()):
             session['role'] = p[request.form['cec']]
+            session['company'] = 'Cisco'
+
+        elif request.form['cec'] in vend.keys():
+                print("USER ROLE")
+                session['role'] = 'User'
+                session['company'] = vend[request.form['cec']]
         else:
-            session['role'] = 'User'
+            session['role'] = 'Employee'
+            session['company'] = 'Cisco'
+        print(session['role'])
+        print(session['company'])
         return redirect(url_for('landing'))
-    print(session['role'])
-    return redirect(url_for('login'))
+
 
 @app.route('/landing',methods=['GET','POST'])
 def landing():
-
-   # openings = openingsDb.find()
-    openings = OpeningstempDb.find()
+    openings = Managers.find()
+    list = []
+    m = dict()
+    managers = Managers.find()
+    for x in managers:
+        list.append(x['manager'])
+    for x in list:
+        m[x] = dict()
+        m[x]['beg'] = JobsDb.find({'manager':x,'expertise':'beg','closed':0}).count()
+        m[x]['int'] = JobsDb.find({'manager': x, 'expertise': 'int','closed':0}).count()
+        m[x]['adv'] = JobsDb.find({'manager': x, 'expertise': 'adv','closed':0}).count()
+    print(m)
     users = userDb.find()
     if request.method == 'GET':
-        return render_template('landing.html', openings=openings)
+        return render_template('landing.html', openings=openings,jobs = m)
     
-    return render_template('landing.html', openings=openings, users=users)
+    return render_template('landing.html', openings=openings, users=users,jobs = m)
 
         
 @app.route('/logout',methods=['GET'])
@@ -208,11 +293,25 @@ def add_obj():
     # openingsDb.insert({"manager":"Rashmikanth","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
     # OpeningstempDb.insert({"manager":"Vaibhav","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
     # OpeningstempDb.insert({"manager":"Rashmikanth","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
-    OpeningstempDb.insert({"manager":"araviana","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
+   # OpeningstempDb.insert({"manager":"araviana","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
+    Managers.insert({"manager":"araviana","levels":[{'tower':"beg_DataCenter",'jobs':[]},{'tower':"beg_Voice",'jobs':[]},{'tower':"beg_Video",'jobs':[]},{'tower':"beg_Security",'jobs':[]},{'tower':"beg_Data",'jobs':[]},
+                                                    {'tower': "int_DataCenter", 'jobs': []},
+                                                    {'tower': "int_Voice", 'jobs': []},
+                                                    {'tower': "int_Video", 'jobs': []},
+                                                    {'tower': "int_Security", 'jobs': []},
+                                                    {'tower': "int_Data", 'jobs': []},
+
+                                                    {'tower': "adv_DataCenter", 'jobs': []},
+                                                    {'tower': "adv_Voice", 'jobs': []},
+                                                    {'tower': "adv_Video", 'jobs': []},
+                                                    {'tower': "adv_Security", 'jobs': []},
+                                                    {'tower': "adv_Data", 'jobs': []}
+                                                    ]})
+
     # userDb.insert({'username':'Aravind','cec':'araviana','password':'araviana'})
     return "Done"
 
-@app.route('/adddetail/<id>', methods=['GET', 'POST'])
+@app.route('/adddetail/<id>', methods=['POST'])
 def add_detail(id):
     job = JobsDb.find({'_id':ObjectId(id)})
     req = []
@@ -221,20 +320,22 @@ def add_detail(id):
     return render_template('add_detail.html',id=id,req=req)
 
 @app.route('/view_tech_interviews',methods=['GET','POST'])
+@technical_role
 def tech_inter():
-    cecs = dict()
-    candis = []
-    all_jobs = JobsDb.find()
-    for x in all_jobs:
-        #print(x)
-        if session['username'] in x['technical_cec']:
-          if x['candidates']:
-            for p in x['candidates']:
-                candis.append(p)
-    cand_det = CandiDb.find({'_id':{'$in':candis},'tech_done':0})
+    # cecs = dict()
+    # candis = []
+    # all_jobs = JobsDb.find()
+    # for x in all_jobs:
+    #     #print(x)
+    #     if session['username'] in x['technical_cec']:
+    #       if x['candidates']:
+    #         for p in x['candidates']:
+    #             candis.append(p)
+    cand_det = CandiDb.find({'technical_cec':{'$in':[session['username']]},'tech_done':0})
     return render_template('tech_interview.html', candidates =cand_det)
 
 @app.route('/tech_status/<id>',methods=['GET','POST'])
+@technical_role
 def tech_status(id):
     name = ''
     cand_det = CandiDb.find({'_id': ObjectId(id)})
@@ -256,7 +357,7 @@ def save_tech_update(id):
         status = int(request.form['status'])
         feedback = request.form['feedback']
     myquery = {"_id": ObjectId(id)}
-    newvalues = {"$set": {"tech_done": status,"tech_feedback":feedback}}
+    newvalues = {"$set": {"tech_done": status,"tech_feedback":feedback,'tech_interviewer':session['username']}}
     CandiDb.update_one(myquery, newvalues)
     return redirect(url_for('tech_inter'))
 
@@ -281,6 +382,13 @@ def sched_date(id):
 
 @app.route('/save_detail/<id>', methods=['POST'])
 def save_detail(id):
+    tower =''
+    level = ''
+    manager = ''
+    techical_cec = ''
+    candi = dict()
+    vend_count = 0
+    total_count = 0
     if request.method == 'POST':
         name= request.form['name']
         skills = request.form.getlist('skill')
@@ -289,23 +397,51 @@ def save_detail(id):
         experience = request.form['experience']
         date_today = datetime.datetime.today().strftime('%d-%m-%Y')
         add_skill = request.form['add_skills']
-        Check_num_of_jobs = JobsDb.find({'_id':ObjectId(id)})
-        for x in Check_num_of_jobs:
-         if len(x['candidates']) == 5:
-             flash('Limit Reached!')
-             return redirect(url_for('add_detail',id=id))
-         elif len(x['candidates']) < 5:
-            obj_id = CandiDb.insert({'name':name,'profile_url':profile,'skills':skills,'add_skills':add_skill,'qualification':quali,'experience':experience,'date':date_today,'vendor':session['username'],'tech_done':0,'managerial_done':0})
-            JobsDb.update({'_id':ObjectId(id)} , {"$push": { "candidates": obj_id }})
-    return redirect(url_for('landing'))
+        resume  = request.form['resume']
+        jobs = JobsDb.find({'_id': ObjectId(id)})
+        for x in jobs:
+            tower = x['tower']
+            level = x['expertise']
+            manager = x['manager']
+            techical_cec = x['technical_cec']
+        jobs.rewind()
+        for x in jobs:
+            for var in x['vendors']:
+                if var['vend'] == session['company']:
+                    print(var['slots'])
+                    vend_count = var['slots'] - 1
+        total_count = x['applicant_count'] -1
+        candi_to_be_add = {'name':name,'job_id':id,'technical_cec':techical_cec,'manager':manager,'tower':tower,'expertise':level,'resume':resume,'profile_url':profile,'skills':skills,'add_skills':add_skill,'qualification':quali,'experience':experience,'date':date_today,'vendor':session['username'],'company':session['company'],'tech_done':0,'managerial_done':0}
+        obj_id = CandiDb.insert(candi_to_be_add)
+        candi['id'] = obj_id
+        candi['state'] = 0
+        JobsDb.update({'_id': ObjectId(id)}, {"$push": {"Applicants": candi}})
+        for x in JobsDb.find({'_id': ObjectId(id),'vendors.vend':session['company']}):
+            print(x)
+        JobsDb.update({'_id': ObjectId(id),'vendors.vend':session['company']}, {"$set": {'vendors.$.slots':vend_count}})
+        JobsDb.update({'_id': ObjectId(id)}, {"$set": { 'applicant_count': total_count}})
+        # Check_num_of_jobs = JobsDb.find({'_id':ObjectId(id)})
+        # for x in Check_num_of_jobs:
+        #  if len(x['candidates']) == 5:
+        #      flash('Limit Reached!')
+        #      return redirect(url_for('add_detail',id=id))
+        #  elif len(x['candidates']) < 5:
+        #     obj_id = CandiDb.insert({'name':name,'profile_url':profile,'skills':skills,'add_skills':add_skill,'qualification':quali,'experience':experience,'date':date_today,'vendor':session['username'],'tech_done':0,'managerial_done':0})
+        #     JobsDb.update({'_id':ObjectId(id)} , {"$push": { "candidates": obj_id }})
+        return redirect(url_for('landing'))
 
 @app.route('/view_jobs/<id>/<job_id>', methods=['GET','POST'])
 def view_jobs(id,job_id):
     selected_jobs = JobsDb.find({'_id':ObjectId(id)})
     candi = []
     for x in selected_jobs:
-        candi = x['candidates']
-    vacancies = CandiDb.find({'_id':{'$in': candi}})
+        candi = x['Applicants']
+    if session['role'] == 'Admin':
+        vacancies = CandiDb.find({'job_id':id})
+    elif session['role'] == 'User':
+        vacancies = CandiDb.find({'job_id': id,'company':session['company']})
+    else:
+        vacancies = CandiDb.find({'job_id': id, 'company': session['company']})
     print(candi)
     return render_template('candidates.html', candidates = vacancies,job_id=job_id,opening_id=id)
 

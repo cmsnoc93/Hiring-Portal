@@ -50,9 +50,9 @@
                                 {% for record in openings %}
                                 <tr>
                                     <td id="manager" class="highrow text-center">{{record['manager']}}</td>
-                                    <td class="highrow text-center"><a href="/view_openings/{{record['manager']}}/beg">{{record.levels[0].count}}</a></td>   
-                                    <td class="highrow text-center"><a href="/view_openings/{{record['manager']}}/int">{{record.levels[1].count}}</a></td>        
-                                    <td class="highrow text-center"><a href="/view_openings/{{record['manager']}}/adv">{{record.levels[2].count}}</a></td>  
+                                    <td class="highrow text-center"><a href="/view_openings/{{record['manager']}}/beg">{{jobs[record['manager']]['beg']}}</a></td>   
+                                    <td class="highrow text-center"><a href="/view_openings/{{record['manager']}}/int">{{jobs[record['manager']]['int']}}</a></td>        
+                                    <td class="highrow text-center"><a href="/view_openings/{{record['manager']}}/adv">{{jobs[record['manager']]['adv']}}</a></td>  
                                 </tr>                               
                                {% endfor %}   
                             </tbody>
