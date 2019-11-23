@@ -500,8 +500,12 @@ def candi_detail(id):
 
 @app.route('/view_by_vendor/<company>', methods=['GET'])
 def view_by_vendor(company):
+    exp = dict()
+    exp['beg'] = 'Beginner'
+    exp['int'] = 'Intermediate'
+    exp['adv'] = 'Advanced'
     vacancies = CandiDb.find({'company':company})
-    return render_template('candidates_1.html', candidates=vacancies)
+    return render_template('candidates_1.html', candidates=vacancies,exp=exp)
 
 @app.route('/delete/<manager>/<level>/<id>', methods=['GET', 'POST'])
 def delete(manager,level,id):

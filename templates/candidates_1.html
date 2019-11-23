@@ -69,6 +69,7 @@
                             <th class="text-center">Name</th>
                             <th class="text-center">Hiring Manager</th>  
                             <th class="text-center">Tower</th>
+                            <th class="text-center">Expertise</th>
                             <th class="text-center">Vendor</th>  
                             <th class="text-center">Vendor CEC</th>  
                             {%if session['role'] == 'Admin' or session['role'] == 'User'%}
@@ -87,9 +88,11 @@
                     <tbody>
                       {% for record in candidates %}
                             <tr>
+                                {%set Expertise = record.expertise%}
                                     <td class="highrow text-center"><a href = "/candi_detail/{{record._id}}">{{ record.name }}</a></td>
                                     <td class = "highrow text-center">{{record.manager}}</td>
                                     <td class = "highrow text-center">{{record.tower}}</td>
+                                    <td class = "highrow text-center">{{exp[Expertise]}}</td>
                                     <td class = "highrow text-center">{{record.company}}</td>
                                     <td class = "highrow text-center">{{record.vendor}}</td>
                                     {%if session['role'] == 'Admin' or session['role'] == 'User'%}
