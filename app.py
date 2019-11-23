@@ -203,6 +203,43 @@ def login1():
 
     return redirect(url_for('login1'))
 
+@app.route('/login2',methods = ['GET','POST'])
+def login2():
+    # if session and session['logged_in']:
+    #     return redirect(url_for('landing'))
+    if request.method == 'GET':
+        return render_template('login.html')
+    if request.method == 'POST':
+                if request.form['cec'] == 'araviana' and request.form['password'] == 'araviana':
+                    session['logged_in'] = True
+                    session['role'] = 'Admin'
+                    session['company'] = 'Cisco'
+                    session['username'] = request.form['cec']
+                    return redirect(url_for('landing'))
+                elif request.form['cec'] == 'neemenon' and request.form['password'] == 'neemenon':
+                    session['logged_in'] = True
+                    session['role'] = 'User'
+                    session['company'] = 'Hcl'
+                    session['username'] = request.form['cec']
+                    return redirect(url_for('landing'))
+                elif request.form['cec'] == 'ritpande' and request.form['password'] == 'ritpande':
+                    session['logged_in'] = True
+                    session['role'] = 'technical'
+                    session['company'] = 'Cisco'
+                    session['username'] = request.form['cec']
+                    return redirect(url_for('landing'))
+                elif request.form['cec'] == 'sumit' and request.form['password'] == 'sumit':
+                    session['logged_in'] = True
+                    session['role'] = 'Admin'
+                    session['company'] = 'Cisco'
+                    session['username'] = request.form['cec']
+                    return redirect(url_for('landing'))
+                else:
+                    flash("Invalid Password", 'log_msg')
+                    return redirect(url_for('login1'))
+                return redirect(url_for('landing'))
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -263,6 +300,8 @@ def login():
 @app.route('/landing',methods=['GET','POST'])
 def landing():
     openings = Managers.find()
+    hcl_candidates = CandiDb.find({'company':'Hcl'})
+    syn_candidates = CandiDb.find({'company':'Synophic'})
     list = []
     m = dict()
     managers = Managers.find()
@@ -276,7 +315,10 @@ def landing():
     print(m)
     users = userDb.find()
     if request.method == 'GET':
-        return render_template('landing.html', openings=openings,jobs = m)
+        if session['username'] == 'sumit':
+         return render_template('landing_sumit.html', openings=openings,jobs = m,hc_count=hcl_candidates.count(),sy_count=syn_candidates.count()  )
+        else:
+            return render_template('landing.html', openings=openings, jobs=m)
     
     return render_template('landing.html', openings=openings, users=users,jobs = m)
 
@@ -455,6 +497,11 @@ def candi_detail(id):
         name = x['name']
     print(name)
     return render_template('view_cand_detail.html',records=candi,name=name)
+
+@app.route('/view_by_vendor/<company>', methods=['GET'])
+def view_by_vendor(company):
+    vacancies = CandiDb.find({'company':company})
+    return render_template('candidates_1.html', candidates=vacancies)
 
 @app.route('/delete/<manager>/<level>/<id>', methods=['GET', 'POST'])
 def delete(manager,level,id):
