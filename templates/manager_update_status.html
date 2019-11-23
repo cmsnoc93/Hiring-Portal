@@ -66,7 +66,7 @@
                                 </div>
                               
                                 <div class="form-group">
-                                    <strong><h4 class="cisco">P1</h4></strong>
+                                    <strong><h4 class="cisco">Communication Skills</h4></strong>
                                     <select class="form-control" name='P1' id = 'P1' onchange = 'f1()' required>
                                         <option value=1>1</option>
                                         <option value=2>2</option>
@@ -77,7 +77,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <strong><h4 class="cisco">P2</h4></strong>
+                                    <strong><h4 class="cisco">Self-Learning</h4></strong>
                                     <select class="form-control" name='P2' id = 'P2' onchange = 'f1()' required>
                                             <option value=1>1</option>
                                             <option value=2>2</option>
@@ -88,8 +88,28 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <strong><h4 class="cisco">P3</h4></strong>
+                                    <strong><h4 class="cisco">Motivational Fit</h4></strong>
                                     <select class="form-control" name='P3' id = 'P3' onchange = 'f1()' required>
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                      </select>
+                                </div>
+                                <div class="form-group">
+                                    <strong><h4 class="cisco">Creating Solutions</h4></strong>
+                                    <select class="form-control" name='P4' id = 'P4' onchange = 'f1()' required>
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                            <option value=3>3</option>
+                                            <option value=4>4</option>
+                                            <option value=5>5</option>
+                                      </select>
+                                </div>
+                                <div class="form-group">
+                                    <strong><h4 class="cisco">Active Learning</h4></strong>
+                                    <select class="form-control" name='P5' id = 'P5' onchange = 'f1()' required>
                                             <option value=1>1</option>
                                             <option value=2>2</option>
                                             <option value=3>3</option>
@@ -99,8 +119,8 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <strong><h4 class="cisco">P4</h4></strong>
-                                    <select class="form-control" name='P4' id = 'P4' onchange = 'f1()' required>
+                                    <strong><h4 class="cisco">Jobs Specific & Technical Competencies</h4></strong>
+                                    <select class="form-control" name='P6' id = 'P6' onchange = 'f1()' required>
                                             <option value=1>1</option>
                                             <option value=2>2</option>
                                             <option value=3>3</option>
@@ -159,8 +179,10 @@ $('#percent').html('<input  class= "form-control" type = "text" name="percent_va
         p2 =Number($('#P2').val());
         p3 =Number( $('#P3').val());
         p4 = Number($('#P4').val());
-        total  = p1+p2+p3+p4;
-        percent = total * 5
+        p5 = Number($('#P5').val());
+        p6 = Number($('#P6').val());
+        total  = p1+p2+p3+p4+p5+p6;
+        percent = total * 3.33
         $('#total').html('<input class= "form-control" type = "text" name="total_val"  value ="'+total +'" disabled>');
         $('#percent').html('<input  class= "form-control" type = "text" name="percent_val"  value ="'+percent +'" disabled>');
 
