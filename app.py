@@ -222,6 +222,14 @@ def login2():
                     session['company'] = 'Hcl'
                     session['username'] = request.form['cec']
                     return redirect(url_for('landing'))
+
+                elif request.form['cec'] == 'hkaramch' and request.form['password'] == 'hkaramch':
+                    session['logged_in'] = True
+                    session['role'] = 'User'
+                    session['company'] = 'Synophic'
+                    session['username'] = request.form['cec']
+                    return redirect(url_for('landing'))
+                
                 elif request.form['cec'] == 'ritpande' and request.form['password'] == 'ritpande':
                     session['logged_in'] = True
                     session['role'] = 'technical'
@@ -301,7 +309,9 @@ def login():
 def landing():
     openings = Managers.find()
     hcl_candidates = CandiDb.find({'company':'Hcl'})
+    hcl_sel_candidates = CandiDb.find({'company': 'Hcl','tech_done':1,'managerial_done':1})
     syn_candidates = CandiDb.find({'company':'Synophic'})
+    syn_sel_candidates = CandiDb.find({'company': 'Synophic', 'tech_done': 1, 'managerial_done': 1})
     list = []
     m = dict()
     managers = Managers.find()
@@ -316,7 +326,7 @@ def landing():
     users = userDb.find()
     if request.method == 'GET':
         if session['username'] == 'sumit':
-         return render_template('landing_sumit.html', openings=openings,jobs = m,hc_count=hcl_candidates.count(),sy_count=syn_candidates.count()  )
+         return render_template('landing_sumit.html', openings=openings,jobs = m,hc_count=hcl_candidates.count(),sy_count=syn_candidates.count(),hcl_sel=hcl_sel_candidates.count(),syn_sel=syn_sel_candidates.count()  )
         else:
             return render_template('landing.html', openings=openings, jobs=m)
     

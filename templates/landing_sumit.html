@@ -69,17 +69,33 @@
                                 <tr>
                                     <td class="text-center"><strong>Partner</strong></td>
                                     <td class="text-center"><strong>No of Candidates</strong></td>
+                                    <td class="text-center"><strong>Selected Candidates (So far)</strong></td>
+                                    <td class="text-center"><strong>Selected Percentage</strong></td>
 
                                 </tr>
                             </thead>
                             <tbody>
                                     <tr>
+                                        {%if hcl_sel != 0%}
+                                        {%set percent = (hcl_sel/hc_count)*100 %}
+                                        {%else%}
+                                        {%set percent = 0%}
+                                        {%endif%}
                                             <td class="text-center">Hcl</td>
                                             <td class="text-center"><a href= '/view_by_vendor/Hcl'>{{hc_count}}</a></td>
+                                            <td class="text-center">{{hcl_sel}}</td>
+                                            <td class="text-center">{{percent}}</td>
                                     </tr>
                                     <tr>
+                                            {%if syn_sel != 0%}
+                                            {%set percent_syn = (syn_sel/sy_count)*100 %}
+                                            {%else%}
+                                             {%set percent_syn = 0%}
+                                            {%endif%}
                                             <td class="text-center">Synophic</td>
                                             <td class="text-center"><a href= '/view_by_vendor/Synophic'>{{sy_count}}</a></td>
+                                            <td class="text-center">{{syn_sel}}</td>
+                                            <td class="text-center">{{percent_syn}}</td>
                                     </tr>
                             </tbody>
                             <tfoot>
