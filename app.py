@@ -67,13 +67,27 @@ def Vendor(f):
     return wrapper
 
 
-@app.route('/email',methods=['GET'])
-def email():
-    msg = Message(subject='Test mail!',
-                  body='This is a Flask Generated mail',
-                  sender="araviana@cisco.com",
-                  recipients=["neemenon@cisco.com"])
-    mail.send(msg)
+@app.route('/email/<id>/<date>',methods=['POST'])
+def email(id,date):
+    candidate = CandiDb.find({'_id':ObjectId(id)})
+    print(candidate)
+    for c in candidate:
+        print(c)
+        msg = Message(subject='** IMPORTANT -- Candidate '+ c['name'] + '--'+' Interview Scheduled on ' + date ,
+                      body='Hi ' + c['vendor'] +', \n' + 'Greetings from Cisco!\n' + 'This is to inform that an interview for ' + c['name'] + ' has been scheduled on ' + date + '.' + '\n' + 'Kindly inform the same to the Candidate. The details of the interview are: '+ '\n' + 'Interviewer CEC: ' + session['username'] + '\n' + 'Candidate name: ' + c['name'] + '\n' + 'Date: ' + date + ' at 9 AM. \n Regards\n NOTE: This is an automated mail. Do not reply to this' ,
+                      sender="araviana@cisco.com",
+                      recipients=[c['vendor']+"@cisco.com"])
+        msg_manager =Message(subject = "* IMPORTANT -- Candidate '+ c['name'] + '--'+' Interview Scheduled on ' + date ",
+                             body = 'E-mail sent to Vendor' + c['vendor'] + 'intimating Interview schedule.',
+                            sender="araviana@cisco.com",
+                            recipients=[c['manager']+"@cisco.com"])
+        msg_interviewer = Message(subject = "* IMPORTANT -- Candidate '+ c['name'] + '--'+' Interview Scheduled on ' + date ",
+                             body = 'Interview Scheduled for '+ c['name'] + ' on ' + date,
+                            sender="araviana@cisco.com",
+                            recipients=[session['username']+"@cisco.com"])
+        mail.send(msg)
+        mail.send(msg_manager)
+        mail.send(msg_interviewer)
     return "Mail DONE"
 
 @app.route('/view_openings/<manager>/<level>',methods=['GET','POST'])
@@ -229,10 +243,10 @@ def login2():
                     session['company'] = 'Synophic'
                     session['username'] = request.form['cec']
                     return redirect(url_for('landing'))
-                
+
                 elif request.form['cec'] == 'ritpande' and request.form['password'] == 'ritpande':
                     session['logged_in'] = True
-                    session['role'] = 'technical'
+                    session['role'] = 'Technical'
                     session['company'] = 'Cisco'
                     session['username'] = request.form['cec']
                     return redirect(url_for('landing'))
@@ -430,6 +444,7 @@ def sched_date(id):
     myquery = {"_id":ObjectId(id)}
     newvalues = {"$set": {"sched_date": date}}
     CandiDb.update_one(myquery, newvalues)
+    result = email(id,date)
     return redirect(url_for('tech_inter'))
 
 @app.route('/save_detail/<id>', methods=['POST'])
