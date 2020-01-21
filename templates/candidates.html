@@ -60,7 +60,6 @@
  
                 </div>
                
-            
 
                 <table id = "dtBasicExample" class="table table-hover table-striped table-bordered table-sm" cellspacing="4" width="100%">
                     <thead>
@@ -69,15 +68,16 @@
                             <th class="text-center">Name</th>  
                             <th class="text-center">Vendor</th>  
                             <th class="text-center">Vendor CEC</th>  
-                            {%if session['role'] == 'Admin' or session['role'] == 'User'%}
+                            {%if session['role'] == 'Admin' or session['role'] == 'User' or session['role'] == 'super_admin' %}
                             <th class="text-center">Technical Interview Status</th>  
                             <th class="text-center">Managerial Interview Status</th>
                             {%endif%}
-                            {%if session['role'] == 'Admin' %}
+                            {%if session['role'] == 'Admin' or session['role'] == 'super_admin' %}
                             <th class="text-center">Technical Interview Feedback</th>  
-                            <th class="text-center">Managerial Interview Feedback</th>  
-                            <th class="text-center">Update Managerial Status</th>  
+                            <th class="text-center">Managerial Interview Feedback</th>
                             {%endif%}
+                            <th class="text-center">Update Managerial Status</th>  
+
 
 
                         </tr>
@@ -88,7 +88,7 @@
                                     <td class="highrow text-center"><a href = "/candi_detail/{{record._id}}">{{ record.name }}</a></td>
                                     <td class = "highrow text-center">{{record.company}}</td>
                                     <td class = "highrow text-center">{{record.vendor}}</td>
-                                    {%if session['role'] == 'Admin' or session['role'] == 'User'%}
+                                    {%if session['role'] == 'Admin' or session['role'] == 'User' or session['role'] == 'super_admin'%}
                                     <!-- TECHNICAL INTERVIEW STATUS -->
                                         {%if record.tech_done == 0 %}
                                         <td class = "highrow text-center">Technical interview not done</td>
@@ -120,7 +120,7 @@
                                         {% endif %}
                                     <!-- MANAGERIAL INTERVIEW END -->
                                 {%endif%}
-                                {%if session['role'] == 'Admin' %}
+                                {%if session['role'] == 'Admin' or session['role'] == 'super_admin' %}
                                     <!-- TECHNICAL FEEDBACK -->
                                         {%if record.tech_done == 0 %}
                                         <td class = "highrow text-center">No Feedback yet</td>
@@ -155,9 +155,13 @@
                                         {% endif %}
                              <!-- MANAGERIAL FEEDBACK END -->
                              <!--UPDATE MANAGER INTERVIEW -->
+                             {%endif%}
+                             {%if session['role'] == 'Admin'%}
                                         {%if record.managerial_done == 0 and record.tech_done == 1  %}
                                         <td class = "highrow text-center"><a href="/manager_status/{{record._id}}/{{job_id}}/{{opening_id}}" class="btn btn-success" role="button">Update Manager Interview<br> Status</a></td>                          
                                         {% endif %}
+                            {%endif%}
+                            {%if session['role'] == 'Admin' or session['role'] == 'super_admin' %}
                             <!-- MANGER UPDATE END -->
                             <!-- VERDICT START -->
                                         {%if record.managerial_done == -1  %}

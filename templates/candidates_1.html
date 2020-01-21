@@ -72,14 +72,17 @@
                             <th class="text-center">Expertise</th>
                             <th class="text-center">Vendor</th>  
                             <th class="text-center">Vendor CEC</th>  
-                            {%if session['role'] == 'Admin' or session['role'] == 'User'%}
+                            {%if session['role'] == 'Admin' or session['role'] == 'User' or session['role'] == 'super_admin'%}
                             <th class="text-center">Technical Interview Status</th>  
                             <th class="text-center">Managerial Interview Status</th>
                             {%endif%}
-                            {%if session['role'] == 'Admin' %}
+                            {%if session['role'] == 'Admin' or session['role'] == 'super_admin' %}
                             <th class="text-center">Technical Interview Feedback</th>  
                             <th class="text-center">Managerial Interview Feedback</th>  
-                            <th class="text-center">Update Managerial Status</th>  
+                            <th class="text-center">Updated Managerial Status</th>  
+                            {%endif%}
+                            {%if session['role'] == 'super_admin'%}
+                            <th class="text-center">Manager Rating</th>  
                             {%endif%}
 
 
@@ -87,6 +90,7 @@
                     </thead>
                     <tbody>
                       {% for record in candidates %}
+                      {{record}}
                             <tr>
                                 {%set Expertise = record.expertise%}
                                     <td class="highrow text-center"><a href = "/candi_detail/{{record._id}}">{{ record.name }}</a></td>
@@ -95,7 +99,7 @@
                                     <td class = "highrow text-center">{{exp[Expertise]}}</td>
                                     <td class = "highrow text-center">{{record.company}}</td>
                                     <td class = "highrow text-center">{{record.vendor}}</td>
-                                    {%if session['role'] == 'Admin' or session['role'] == 'User'%}
+                                    {%if session['role'] == 'Admin' or session['role'] == 'User' or session['role'] == 'super_admin'%}
                                     <!-- TECHNICAL INTERVIEW STATUS -->
                                         {%if record.tech_done == 0 %}
                                         <td class = "highrow text-center">Technical interview not done</td>
@@ -127,7 +131,7 @@
                                         {% endif %}
                                     <!-- MANAGERIAL INTERVIEW END -->
                                 {%endif%}
-                                {%if session['role'] == 'Admin' %}
+                                {%if session['role'] == 'Admin' or session['role'] == 'super_admin' %}
                                     <!-- TECHNICAL FEEDBACK -->
                                         {%if record.tech_done == 0 %}
                                         <td class = "highrow text-center">No Feedback yet</td>
@@ -177,7 +181,21 @@
                                         <td bgcolor="#F42C08" class = "highrow text-center"><b>Candidate Rejected</b></td>
                                         {% endif %}
                                 <!--VERDICT END  -->
-                                    {%endif%}
+                                 <!--RATING BEGIN  -->
+                            {%endif%}
+                            {% if session['role'] == 'super_admin' %}
+                                 {%if record.managerial_done == -1  %}
+                                        <td class = "highrow text-center"><b>NA</b></td>
+                                        {% endif %}
+                                        {%if record.managerial_done == 1  %}
+                                        <td class = "highrow text-center"><b><p title="Communication Skills= {{record.p1}} &#xA; Self-Learning = {{record.p2}} &#xA; Motivational Fit = {{record.p3}} &#xA; Creating Solutions = {{record.p4}} &#xA; Active Learning = {{record.p5}} &#xA; Jobs Specific & Technical Competencies = {{record.p6}}">{{record.percent}}</p></b></td>
+                                        {% endif %}
+                                        {%if record.tech_done == -1 %}
+                                        <td class = "highrow text-center"><b>NA</b></td>
+                                        {% endif %}
+                                  <!--RATING END  -->
+                            {%endif%}
+
                                 </tr>
                             {% endfor %}
                     </tbody>

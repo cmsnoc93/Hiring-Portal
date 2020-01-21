@@ -96,6 +96,8 @@ def view_openings(manager,level):
         openings = JobsDb.find({'eligible_vends':{"$in":[session['company']]},'manager':manager,'expertise':level})
     elif session['role'] == 'Admin':
         openings = JobsDb.find({'manager':manager,'expertise':level})
+    elif session['role'] == 'super_admin':
+        openings = JobsDb.find({'manager':manager,'expertise':level})
     else:
         openings = JobsDb.find({'manager':manager,'expertise':level})
     if request.method == 'GET':
@@ -252,7 +254,7 @@ def login2():
                     return redirect(url_for('landing'))
                 elif request.form['cec'] == 'sumit' and request.form['password'] == 'sumit':
                     session['logged_in'] = True
-                    session['role'] = 'Admin'
+                    session['role'] = 'super_admin'
                     session['company'] = 'Cisco'
                     session['username'] = request.form['cec']
                     return redirect(url_for('landing'))
@@ -432,9 +434,17 @@ def save_manager_update(id,opening_id):
     if request.method=='POST':
         status = int(request.form['status'])
         feedback = request.form['feedback']
+        p1 = request.form['P1']
+        p2 = request.form['P2']
+        p3 = request.form['P3']
+        p4 = request.form['P4']
+        p5 = request.form['P5']
+        p6 = request.form['P6']
+        total = int(p1) + int(p2) + int(p3) + int(p4) + int(p5) + int(p6)
+        percent = ( total / 30) * 100
         job_id = request.form['job_id']
     myquery = {"_id": ObjectId(id)}
-    newvalues = {"$set": {"managerial_done": status,"manager_feedback":feedback}}
+    newvalues = {"$set": {"managerial_done": status,"manager_feedback":feedback,"p1":p1,"p2":p2,"p3":p3,"p4":p4,"p5":p5,"p6":p6, 'total':total, 'percent':percent}}
     CandiDb.update_one(myquery, newvalues)
     return redirect(url_for('view_jobs', id=opening_id,job_id=job_id))
 
@@ -503,7 +513,7 @@ def view_jobs(id,job_id):
     candi = []
     for x in selected_jobs:
         candi = x['Applicants']
-    if session['role'] == 'Admin':
+    if session['role'] == 'Admin' or session['role'] == 'super_admin':
         vacancies = CandiDb.find({'job_id':id})
     elif session['role'] == 'User':
         vacancies = CandiDb.find({'job_id': id,'company':session['company']})
