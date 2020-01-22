@@ -90,7 +90,6 @@
                     </thead>
                     <tbody>
                       {% for record in candidates %}
-                      {{record}}
                             <tr>
                                 {%set Expertise = record.expertise%}
                                     <td class="highrow text-center"><a href = "/candi_detail/{{record._id}}">{{ record.name }}</a></td>
@@ -191,6 +190,9 @@
                                         <td class = "highrow text-center"><b><p title="Communication Skills= {{record.p1}} &#xA; Self-Learning = {{record.p2}} &#xA; Motivational Fit = {{record.p3}} &#xA; Creating Solutions = {{record.p4}} &#xA; Active Learning = {{record.p5}} &#xA; Jobs Specific & Technical Competencies = {{record.p6}}">{{record.percent}}</p></b></td>
                                         {% endif %}
                                         {%if record.tech_done == -1 %}
+                                        <td class = "highrow text-center"><b>NA</b></td>
+                                        {% endif %}
+                                        {%if record.tech_done == 0 %}
                                         <td class = "highrow text-center"><b>NA</b></td>
                                         {% endif %}
                                   <!--RATING END  -->
