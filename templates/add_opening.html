@@ -3,14 +3,26 @@
 <head>
     <meta charset="utf-8">
     <title>CMS Hiring </title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <link rel="stylesheet" href="/static/cisco.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
+    
   
+    <style>
+      .dropdown-submenu {
+        position: relative;
+      }
+      
+      .dropdown-submenu .dropdown-menu {
+        top: 0;
+        left: 100%;
+        margin-top: -1px;
+      }
+      </style>
 
     <script>
     let skills = {
@@ -24,7 +36,6 @@
 
 
       $(document).on('change','#vertical',function() {
-       
         $('#skills').empty().append(skills[$(this).val()].map((skill) => {
           return $('<div class="checkbox" style="display:inline;margin-right:50px;"><label>' + 
           '<input type="checkbox" name="skills" value="' + skill + '"/>' + skill +
@@ -95,6 +106,22 @@
                                     </label>
                                 </div>
                                 </div>
+                                <div class="dropdown">
+                                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Tutorials
+                                    <span class="caret"></span></button>
+                                    <ul class="dropdown-menu">
+                                      <li><a tabindex="-1" href="#">HTML</a></li>
+                                      <li><a tabindex="-1" href="#">CSS</a></li>
+                                      <li class="dropdown-submenu">
+                                        <a class="test" tabindex="-1" href="#">New dropdown <span class="caret"></span></a>
+                                        <ul id = "tableMenu" class="dropdown-menu">
+                                          <li><a tabindex="-1" href="#">DataCenter</a></li>
+                                          <li><a tabindex="-1" href="#">Data</a></li>
+                                       </ul>
+                                      </li>
+                                    </ul>
+                                  </div>
+
                                 <strong><h4 class="cisco">Business Vertical</h4></strong>
                                 <select class="form-control" name="vertical" id="vertical">
                                     <option value="Data">Data</option>
@@ -148,6 +175,31 @@
   });
   
 });
+// ________________________________________________________
+$(document).ready(function(){
+  $("#tableMenu a").click(function(e){
+    e.preventDefault(); // cancel the link behaviour
+    var selText = $(this).text();
+
+    $('#skills').empty().append(skills[$(this).text()].map((skill) => {
+          return $('<div class="checkbox" style="display:inline;margin-right:50px;"><label>' + 
+          '<input type="checkbox" name="skills" value="' + skill + '"/>' + skill +
+          '</label></div>');
+        }));
+
+    console.log(selText)
+});
+
+  $('.dropdown-submenu a.test').on("click", function(e){
+    $(this).next('ul').toggle();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+});
+// __________________________________________________________
+</script>
+
+
   $('#separate').on('keyup',function(){
    var splitter = $('#separate').val().split(',');  
    var htmlToAdd='';

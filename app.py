@@ -1,6 +1,9 @@
-from flask import Flask,render_template,make_response,request,redirect,url_for,Response,session,flash,Response,send_file
+from flask import Flask,render_template,make_response,request,redirect,url_for,Response,session,flash,Response,send_file,jsonify
 from flask_mail import Mail,Message
+import flask
+from flask_login import LoginManager,UserMixin
 from pymongo import MongoClient
+from datetime import timedelta
 import json
 import urllib
 import datetime
@@ -12,6 +15,7 @@ from ldap3 import Server,Connection,ALL
 from functools import wraps
 import datetime,random
 import gridfs
+from pprint import pprint
 # cmsnoc93:'+ urllib.parse.quote('cmsnoc@123') + '@cluster0-qxw77.mongodb.net/test?retryWrites=true&w=majority
 mongo = MongoClient('mongodb+srv://cmsnoc93:'+ urllib.parse.quote('cmsnoc@123') + '@cluster0-qxw77.mongodb.net/test?retryWrites=true&w=majority')
 db = mongo.CMS_Hiring
@@ -26,6 +30,23 @@ app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
 mail = Mail(app)
 app.secret_key = 'some_secret'
+SESSION_REFRESH_EACH_REQUEST = True
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+      if session:
+        if session['logged_in'] == True:
+            return f(*args,**kwargs )
+        elif session['logged_in'] == False:
+            flash(u"You need to Login first","log_msg")
+            return redirect(url_for('login'))
+      else:
+            flash(u"You need to Login first", "log_msg")
+            return redirect(url_for('login'))
+    return decorated_function
+
 
 def technical_role(f):
     @wraps(f)
@@ -39,7 +60,6 @@ def technical_role(f):
             return redirect(url_for('login'))
 
     return wrapper
-
 def Admin(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -65,7 +85,10 @@ def Vendor(f):
             return redirect(url_for('login'))
 
     return wrapper
-
+@app.route('/config',methods=['GET'])
+def config():
+    pprint(str(app.config))
+    return (str(app.config))
 
 @app.route('/email/<id>/<date>',methods=['POST'])
 def email(id,date):
@@ -77,11 +100,11 @@ def email(id,date):
                       body='Hi ' + c['vendor'] +', \n' + 'Greetings from Cisco!\n' + 'This is to inform that an interview for ' + c['name'] + ' has been scheduled on ' + date + '.' + '\n' + 'Kindly inform the same to the Candidate. The details of the interview are: '+ '\n' + 'Interviewer CEC: ' + session['username'] + '\n' + 'Candidate name: ' + c['name'] + '\n' + 'Date: ' + date + ' at 9 AM. \n Regards\n NOTE: This is an automated mail. Do not reply to this' ,
                       sender="araviana@cisco.com",
                       recipients=[c['vendor']+"@cisco.com"])
-        msg_manager =Message(subject = "* IMPORTANT -- Candidate '+ c['name'] + '--'+' Interview Scheduled on ' + date ",
+        msg_manager =Message(subject = '* IMPORTANT -- Candidate '+ c['name'] + '--'+' Interview Scheduled on ' + date ,
                              body = 'E-mail sent to Vendor' + c['vendor'] + 'intimating Interview schedule.',
                             sender="araviana@cisco.com",
                             recipients=[c['manager']+"@cisco.com"])
-        msg_interviewer = Message(subject = "* IMPORTANT -- Candidate '+ c['name'] + '--'+' Interview Scheduled on ' + date ",
+        msg_interviewer = Message(subject = '* IMPORTANT -- Candidate '+ c['name'] + '--'+' Interview Scheduled on ' + date ,
                              body = 'Interview Scheduled for '+ c['name'] + ' on ' + date,
                             sender="araviana@cisco.com",
                             recipients=[session['username']+"@cisco.com"])
@@ -200,6 +223,8 @@ def login1():
         return render_template('login.html')
     if request.method == 'POST':
         if (request.form['cec'] in m.keys()):
+                user_obj = users.find({'username':request.form['cec'],'password':request.form['password']})
+                print(user_obj)
                 if (m[request.form['cec']] == request.form['password']):
                     session['logged_in'] = True
                     session['role'] = p[request.form['cec']]
@@ -231,12 +256,18 @@ def login2():
                     session['role'] = 'Admin'
                     session['company'] = 'Cisco'
                     session['username'] = request.form['cec']
+                    session.permanent = True
+                    app.permanent_session_lifetime = timedelta(seconds=10)
+                    flask.session.modified = True
                     return redirect(url_for('landing'))
                 elif request.form['cec'] == 'neemenon' and request.form['password'] == 'neemenon':
                     session['logged_in'] = True
                     session['role'] = 'User'
                     session['company'] = 'Hcl'
                     session['username'] = request.form['cec']
+                    session.permanent = True
+                    app.permanent_session_lifetime = timedelta(seconds=10)
+                    flask.session.modified = True
                     return redirect(url_for('landing'))
 
                 elif request.form['cec'] == 'hkaramch' and request.form['password'] == 'hkaramch':
@@ -244,6 +275,9 @@ def login2():
                     session['role'] = 'User'
                     session['company'] = 'Synophic'
                     session['username'] = request.form['cec']
+                    session.permanent = True
+                    app.permanent_session_lifetime = timedelta(seconds=10)
+                    flask.session.modified = True
                     return redirect(url_for('landing'))
 
                 elif request.form['cec'] == 'ritpande' and request.form['password'] == 'ritpande':
@@ -251,12 +285,18 @@ def login2():
                     session['role'] = 'Technical'
                     session['company'] = 'Cisco'
                     session['username'] = request.form['cec']
+                    session.permanent = True
+                    app.permanent_session_lifetime = timedelta(seconds=10)
+                    flask.session.modified = True
                     return redirect(url_for('landing'))
                 elif request.form['cec'] == 'sumit' and request.form['password'] == 'sumit':
                     session['logged_in'] = True
                     session['role'] = 'super_admin'
                     session['company'] = 'Cisco'
                     session['username'] = request.form['cec']
+                    session.permanent = True
+                    app.permanent_session_lifetime = timedelta(seconds=10)
+                    flask.session.modified = True
                     return redirect(url_for('landing'))
                 else:
                     flash("Invalid Password", 'log_msg')
@@ -283,9 +323,12 @@ def login():
         p[u['cec']] = u['role']
 
     if request.method == 'GET':
+        if session:
+            session.clear()
         return render_template('login.html')
     if request.method == 'POST':
-
+        user_obj = userDb.find({'username': request.form['cec'], 'password': request.form['password']})
+        print(user_obj)
         server = Server('ds.cisco.com')
         userdn = 'cn=' + request.form['cec'] + ',ou=Employees,ou=Cisco Users,dc=cisco,dc=com'
         try:
@@ -322,6 +365,7 @@ def login():
 
 
 @app.route('/landing',methods=['GET','POST'])
+@login_required
 def landing():
     openings = Managers.find()
     hcl_candidates = CandiDb.find({'company':'Hcl'})
@@ -352,6 +396,7 @@ def landing():
 @app.route('/logout',methods=['GET'])
 def logout():
     session['logged_in'] = False
+    session.clear()
     flash(u'You were successfully logged  out!', 'log_msg')
     return redirect(url_for('login'))
 
