@@ -111,7 +111,7 @@ def email(id,date):
         mail.send(msg)
         mail.send(msg_manager)
         mail.send(msg_interviewer)
-    return "Mail DONE"
+    return "Mail Done"
 
 @app.route('/view_openings/<manager>/<level>',methods=['GET','POST'])
 def view_openings(manager,level):
@@ -134,6 +134,7 @@ def view_openings(manager,level):
 
 @app.route('/add_opening',methods=['GET','POST'])
 def add_opening():
+   print(session)
    if session['role'] == 'User':
         flash('Sorry! not authorized for the page')
         return redirect(url_for('landing'))
@@ -151,11 +152,10 @@ def add_opening():
         date = request.form['date']
         technical_res = request.form.getlist('Hirer')
         Vendor = request.form.getlist('vendor')
-        print(allowed_per_vend_dict)
+        print("Hi")
+        print(count)
         for x in Vendor:
             print(x)
-            # allowed_per_vend_dict['vend'] = x
-            # allowed_per_vend_dict['slots'] = 5 * int(count)
             vend_arr.append({'vend':x,'slots':5 * int(count)})
         print(allowed_per_vend_dict)
         job = {"job_id": random.sample(range(10000, 99999), 1)[0],'eligible_vends':Vendor ,"position": "NOC Engineer", "requirements": skills,
@@ -165,137 +165,48 @@ def add_opening():
         job_id = JobsDb.insert(jobs_arr)
         Managers.update({'manager':session['username'],"levels.tower":expertise + "_" + vertical },{"$push":{"levels.$.jobs":job_id}})
         return redirect(url_for('landing'))
-        # for var in range(0,int(count)):
-        #     id = binascii.hexlify(os.urandom(16))
-        #     id_arr.append(id)
-        #     job = {"job_id":random.sample(range(10000, 99999) ,1)[0],"position":"NOC Engineer","requirements":skills,"expertise":expertise,"tower":vertical,'technical_cec':technical_res,'id':id,"manager":session['username'],"opening_date":date,'candidates':[]}
-        #     jobs_arr.append(job)
-        # job_id = JobsDb.insert(jobs_arr)
-        # print(id_arr)
-        # for x in id_arr:
-        #     a = JobsDb.find({'id':x})
-        #     for p in a:
-        #         print("HAHAHAHA")
-        #         OpeningstempDb.update( {"manager":session['username'],"levels.id":expertise},{"$push":{"levels.$.jobs":p['_id']}})
-        # OpeningstempDb.update( {"manager":session['username'],"levels.id":expertise},{"$inc": { "levels.$.count": int(count) }})
-        # print("JOBS")
-        # print(jobs_arr)
-        # # for var in range(0,int(count)):
-        # #     job_id = JobsDb.insert(job)
-        # #     print("inserted")
-        # #     print(job_id)
-        # #     print("\n\n\n\n")
-        # #     OpeningstempDb.update( {"manager":session['username'],"levels.id":expertise},{"$push":{"levels.$.jobs":job_id}})
-        # # print(job)
-        # # openingsDb.update( {"manager":session['username'],"levels.id":expertise},{"$inc": { "levels.$.count": int(count) },"$push":{"levels.$.jobs":job}})
-        # return redirect(url_for('landing'))
-
-@app.route('/upload',methods=['GET'])
-def upload():
-    print(os.path.getsize(r'Nginx.png'))
-    db1 = mongo.File_DB
-    fs = gridfs.GridFS(db1)
-    fileID = fs.put(open(r'Nginx.png', 'rb'))
-    out = fs.get(fileID)
-    print(fileID)
-    print(out.length)
-    f = fs.get(ObjectId(fileID))
-    response = make_response(f.read())
-    response.mimetype = 'image/jpeg'
-    return response
-
-@app.route('/login1',methods = ['GET','POST'])
-def login1():
-    # if session and session['logged_in']:
-    #     return redirect(url_for('landing'))
-    m = dict()
-    p = dict()
-    vend = dict()
-    users = userDb.find()
-    vendors = Vendors.find()
-    for v in vendors:
-        vend[v['cec']] = v['company']
-    for u in users:
-        m[u['username']] = u['password']
-        p[u['username']] = u['role']
-
-    if request.method == 'GET':
-        return render_template('login.html')
-    if request.method == 'POST':
-        if (request.form['cec'] in m.keys()):
-                user_obj = users.find({'username':request.form['cec'],'password':request.form['password']})
-                print(user_obj)
-                if (m[request.form['cec']] == request.form['password']):
-                    session['logged_in'] = True
-                    session['role'] = p[request.form['cec']]
-                    session['username'] = request.form['cec']
-
-                    return redirect(url_for('landing'))
-                else:
-                    flash("Invalid Password", 'log_msg')
-                    return redirect(url_for('login1'))
-        else:
-            session['logged_in'] = True
-            session['role'] = p[request.form['cec']]
-            session['username'] = request.form['cec']
-            session['company'] = vend[request.form['cec']]
-            return redirect(url_for('landing'))
-
-
-    return redirect(url_for('login1'))
 
 @app.route('/login2',methods = ['GET','POST'])
 def login2():
-    # if session and session['logged_in']:
-    #     return redirect(url_for('landing'))
     if request.method == 'GET':
         return render_template('login.html')
     if request.method == 'POST':
-                if request.form['cec'] == 'araviana' and request.form['password'] == 'araviana':
+                if request.form['cec'] == 'saursark' and request.form['password'] == 'saursark':
                     session['logged_in'] = True
                     session['role'] = 'Admin'
                     session['company'] = 'Cisco'
                     session['username'] = request.form['cec']
                     session.permanent = True
-                    app.permanent_session_lifetime = timedelta(seconds=10)
+                    app.permanent_session_lifetime = timedelta(seconds=50000)
                     flask.session.modified = True
                     return redirect(url_for('landing'))
-                elif request.form['cec'] == 'neemenon' and request.form['password'] == 'neemenon':
+                elif request.form['cec'] == 'prajbr' and request.form['password'] == 'prajbr':
                     session['logged_in'] = True
                     session['role'] = 'User'
                     session['company'] = 'Hcl'
                     session['username'] = request.form['cec']
                     session.permanent = True
-                    app.permanent_session_lifetime = timedelta(seconds=10)
+                    app.permanent_session_lifetime = timedelta(seconds=50000)
                     flask.session.modified = True
                     return redirect(url_for('landing'))
 
-                elif request.form['cec'] == 'hkaramch' and request.form['password'] == 'hkaramch':
-                    session['logged_in'] = True
-                    session['role'] = 'User'
-                    session['company'] = 'Synophic'
-                    session['username'] = request.form['cec']
-                    session.permanent = True
-                    app.permanent_session_lifetime = timedelta(seconds=10)
-                    flask.session.modified = True
-                    return redirect(url_for('landing'))
-
-                elif request.form['cec'] == 'ritpande' and request.form['password'] == 'ritpande':
+                elif request.form['cec'] == 'somsinha' and request.form['password'] == 'somsinha':
                     session['logged_in'] = True
                     session['role'] = 'Technical'
                     session['company'] = 'Cisco'
                     session['username'] = request.form['cec']
                     session.permanent = True
-                    app.permanent_session_lifetime = timedelta(seconds=10)
+                    app.permanent_session_lifetime = timedelta(seconds=50000)
                     flask.session.modified = True
                     return redirect(url_for('landing'))
+
                 elif request.form['cec'] == 'sumit' and request.form['password'] == 'sumit':
                     session['logged_in'] = True
                     session['role'] = 'super_admin'
                     session['company'] = 'Cisco'
                     session['username'] = request.form['cec']
                     session.permanent = True
-                    app.permanent_session_lifetime = timedelta(seconds=10)
+                    app.permanent_session_lifetime = timedelta(seconds=50000)
                     flask.session.modified = True
                     return redirect(url_for('landing'))
                 else:
@@ -307,8 +218,6 @@ def login2():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
-    # if session and session['logged_in']:
-    #  return redirect(url_for('landing'))
     m = dict()
     p = dict()
     vend = dict()
@@ -402,11 +311,6 @@ def logout():
 
 @app.route('/add_obj',methods=['GET','POST'])
 def add_obj():
-    # openingsDb.insert({"manager":"Vaibhav","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
-    # openingsDb.insert({"manager":"Rashmikanth","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
-    # OpeningstempDb.insert({"manager":"Vaibhav","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
-    # OpeningstempDb.insert({"manager":"Rashmikanth","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
-   # OpeningstempDb.insert({"manager":"araviana","levels":[{"id":"beg","count":0,"jobs":[]},{"id":"int","count":0,"jobs":[]},{"id":"adv","count":0,"jobs":[]}]})
     Managers.insert({"manager":"araviana","levels":[{'tower':"beg_DataCenter",'jobs':[]},{'tower':"beg_Voice",'jobs':[]},{'tower':"beg_Video",'jobs':[]},{'tower':"beg_Security",'jobs':[]},{'tower':"beg_Data",'jobs':[]},
                                                     {'tower': "int_DataCenter", 'jobs': []},
                                                     {'tower': "int_Voice", 'jobs': []},
@@ -421,7 +325,6 @@ def add_obj():
                                                     {'tower': "adv_Data", 'jobs': []}
                                                     ]})
 
-    # userDb.insert({'username':'Aravind','cec':'araviana','password':'araviana'})
     return "Done"
 
 @app.route('/adddetail/<id>', methods=['POST'])
@@ -435,15 +338,6 @@ def add_detail(id):
 @app.route('/view_tech_interviews',methods=['GET','POST'])
 @technical_role
 def tech_inter():
-    # cecs = dict()
-    # candis = []
-    # all_jobs = JobsDb.find()
-    # for x in all_jobs:
-    #     #print(x)
-    #     if session['username'] in x['technical_cec']:
-    #       if x['candidates']:
-    #         for p in x['candidates']:
-    #             candis.append(p)
     cand_det = CandiDb.find({'technical_cec':{'$in':[session['username']]},'tech_done':0})
     return render_template('tech_interview.html', candidates =cand_det)
 
@@ -499,7 +393,7 @@ def sched_date(id):
     myquery = {"_id":ObjectId(id)}
     newvalues = {"$set": {"sched_date": date}}
     CandiDb.update_one(myquery, newvalues)
-    result = email(id,date)
+    # result = email(id,date)
     return redirect(url_for('tech_inter'))
 
 @app.route('/save_detail/<id>', methods=['POST'])
@@ -597,7 +491,6 @@ def delete(manager,level,id):
     ans = OpeningstempDb.find({"manager":manager})
     for x in ans:
         levels = x['levels']
-    #print(ObjectId(id))
     print(levels)
     print(levels[level_d[level]])
     print("\n\n")

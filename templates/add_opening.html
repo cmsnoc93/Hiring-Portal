@@ -82,7 +82,7 @@
                             <form action="/add_opening" method="POST" id='openings_id'> 
                                 <div class="form-group">
                                     <strong><h4 class="cisco">Number of Positions Available</h4></strong>
-                                    <input type="username" class="form-control" placeholder="Count" name="count" required>
+                                    <input type="number" class="form-control" placeholder="Count" name="count" required>
                                 </div>
                                 <strong><h4 class="cisco">Expertise Level</h4></strong>
                                 <div class="col-md-12" style="margin:5px">
@@ -106,21 +106,6 @@
                                     </label>
                                 </div>
                                 </div>
-                                <div class="dropdown">
-                                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Tutorials
-                                    <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                      <li><a tabindex="-1" href="#">HTML</a></li>
-                                      <li><a tabindex="-1" href="#">CSS</a></li>
-                                      <li class="dropdown-submenu">
-                                        <a class="test" tabindex="-1" href="#">New dropdown <span class="caret"></span></a>
-                                        <ul id = "tableMenu" class="dropdown-menu">
-                                          <li><a tabindex="-1" href="#">DataCenter</a></li>
-                                          <li><a tabindex="-1" href="#">Data</a></li>
-                                       </ul>
-                                      </li>
-                                    </ul>
-                                  </div>
 
                                 <strong><h4 class="cisco">Business Vertical</h4></strong>
                                 <select class="form-control" name="vertical" id="vertical">
@@ -198,9 +183,8 @@ $(document).ready(function(){
 });
 // __________________________________________________________
 </script>
-
-
-  $('#separate').on('keyup',function(){
+<script>
+$('#separate').on('keyup',function(){
    var splitter = $('#separate').val().split(',');  
    var htmlToAdd='';
    for (i=0; i<splitter.length; i++)
